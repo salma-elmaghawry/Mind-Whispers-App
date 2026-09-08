@@ -1,0 +1,65 @@
+{
+    "app_name": "Mind Whispers",
+    "common": {
+        "ok": "OK",
+        "cancel": "Cancel",
+        "retry": "Retry",
+        "save": "Save",
+        "next": "Next",
+        "skip": "Skip",
+        "done": "Done",
+        "loading": "Loading...",
+        "no_data": "No data available"
+    },
+    "preferences": {
+        "language": "Language",
+        "theme": "Theme",
+        "theme_light": "Light",
+        "theme_dark": "Dark",
+        "theme_system": "System"
+    },
+    "errors": {
+        "network_error": "No internet connection. Please check your network and try again",
+        "server_error": "Server error. Please try again later",
+        "unexpected_error": "An unexpected error occurred",
+        "unauthorized": "Your session has expired. Please sign in again",
+        "forbidden": "You don't have permission to do that",
+        "not_found": "We couldn't find what you were looking for",
+        "validation_error": "Some of the information you entered isn't valid"
+    },
+    "auth": {
+        "errors": {
+            "invalid_credentials": "Invalid login credentials",
+            "email_in_use": "This email is already registered"
+        },
+        "login": {
+            "email_label": "Email",
+            "email_hint": "Enter your email",
+            "email_required": "Email is required",
+            "email_invalid": "Enter a valid email",
+            "password_label": "Password",
+            "password_hint": "Enter your password",
+            "password_required": "Password is required",
+            "password_length": "Password must be at least 6 characters"
+        },
+        "signup": {
+            "name_required": "Name is required",
+            "password_mismatch": "Passwords do not match"
+        }
+    },
+    "roles": {
+        "admin": "Admin",
+        "author": "Author",
+        "reader": "Reader"
+    },
+    "role_picker": {
+        "title": "Who's writing today?",
+        "subtitle": "Temporary role switcher for the foundation build — replaced by real sign-in once auth ships on Day 3.",
+        "continue_as": "Continue as {}"
+    },
+    "home": {
+        "welcome_title": "Welcome, {}",
+        "welcome_subtitle": "This screen is a placeholder — its real content arrives later in the build plan.",
+        "sign_out": "Switch role"
+    }
+}
