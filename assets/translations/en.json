@@ -1,5 +1,5 @@
 {
-    "app_name": "Mind Whispers",
+    "app_name": "Writiva",
     "common": {
         "ok": "OK",
         "cancel": "Cancel",
@@ -60,6 +60,9 @@
     "home": {
         "welcome_title": "Welcome, {}",
         "welcome_subtitle": "This screen is a placeholder — its real content arrives later in the build plan.",
-        "sign_out": "Switch role"
-    }
+        "sign_out": "Switch role",
+        "tab_home": "Home",
+        "tab_settings": "Settings"
+    },
+    "tagline": "Read • Write • Be Heard"
 }
