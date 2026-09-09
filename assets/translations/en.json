@@ -3,6 +3,7 @@
     "common": {
         "ok": "OK",
         "cancel": "Cancel",
+        "delete": "Delete",
         "retry": "Retry",
         "save": "Save",
         "next": "Next",
@@ -33,6 +34,8 @@
             "email_in_use": "This email is already registered"
         },
         "login": {
+            "title": "Welcome back",
+            "subtitle": "Sign in to pick up where you left off.",
             "email_label": "Email",
             "email_hint": "Enter your email",
             "email_required": "Email is required",
@@ -40,11 +43,24 @@
             "password_label": "Password",
             "password_hint": "Enter your password",
             "password_required": "Password is required",
-            "password_length": "Password must be at least 6 characters"
+            "password_length": "Password must be at least 6 characters",
+            "remember_me": "Keep me signed in",
+            "submit": "Sign in",
+            "no_account": "Don't have an account?",
+            "sign_up_link": "Sign up"
         },
         "signup": {
+            "title": "Create your account",
+            "subtitle": "Join Writiva to read, write, and be heard.",
+            "name_label": "Name",
+            "name_hint": "Enter your full name",
             "name_required": "Name is required",
-            "password_mismatch": "Passwords do not match"
+            "confirm_password_label": "Confirm password",
+            "confirm_password_hint": "Re-enter your password",
+            "password_mismatch": "Passwords do not match",
+            "submit": "Create account",
+            "have_account": "Already have an account?",
+            "sign_in_link": "Sign in"
         }
     },
     "roles": {
@@ -52,17 +68,59 @@
         "author": "Author",
         "reader": "Reader"
     },
-    "role_picker": {
-        "title": "Who's writing today?",
-        "subtitle": "Temporary role switcher for the foundation build — replaced by real sign-in once auth ships on Day 3.",
-        "continue_as": "Continue as {}"
-    },
     "home": {
         "welcome_title": "Welcome, {}",
         "welcome_subtitle": "This screen is a placeholder — its real content arrives later in the build plan.",
-        "sign_out": "Switch role",
+        "sign_out": "Sign out",
         "tab_home": "Home",
         "tab_settings": "Settings"
+    },
+    "feed": {
+        "tab_label": "Home",
+        "all_categories": "All",
+        "search_label": "Search",
+        "search_hint": "Search for posts, authors...",
+        "trending_title": "Trending",
+        "empty_title": "No posts found",
+        "empty_message": "Try a different search or category."
+    },
+    "explore": {
+        "tab_label": "Explore",
+        "empty_title": "Explore is coming soon",
+        "empty_message": "Curated shelves and author spotlights will show up here."
+    },
+    "write": {
+        "tab_label": "Write",
+        "title": "Write",
+        "drafts_tab": "Drafts",
+        "published_tab": "Published",
+        "draft_status": "Draft",
+        "published_status": "Published",
+        "empty_drafts_title": "No drafts yet",
+        "empty_published_title": "Nothing published yet",
+        "compose_coming_soon": "Composing a new post is coming soon."
+    },
+    "notifications": {
+        "tab_label": "Notifications",
+        "empty_title": "No notifications yet",
+        "empty_message": "We'll let you know when something needs your attention."
+    },
+    "profile": {
+        "tab_label": "Profile",
+        "email_unverified": "Email not verified"
+    },
+    "comments": {
+        "title": "Comments ({})",
+        "empty_title": "No comments yet",
+        "composer_label": "Comment",
+        "composer_hint": "Write a comment...",
+        "delete_title": "Delete comment?",
+        "delete_message": "This can't be undone."
+    },
+    "time": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "days_ago": "{} days ago"
     },
     "tagline": "Read • Write • Be Heard"
 }

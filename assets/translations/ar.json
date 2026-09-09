@@ -3,6 +3,7 @@
     "common": {
         "ok": "حسناً",
         "cancel": "إلغاء",
+        "delete": "حذف",
         "retry": "إعادة المحاولة",
         "save": "حفظ",
         "next": "التالي",
@@ -33,6 +34,8 @@
             "email_in_use": "هذا البريد الإلكتروني مسجل بالفعل"
         },
         "login": {
+            "title": "مرحباً بعودتك",
+            "subtitle": "سجّل الدخول لمتابعة ما توقفت عنده.",
             "email_label": "البريد الإلكتروني",
             "email_hint": "أدخل بريدك الإلكتروني",
             "email_required": "البريد الإلكتروني مطلوب",
@@ -40,11 +43,24 @@
             "password_label": "كلمة المرور",
             "password_hint": "أدخل كلمة المرور",
             "password_required": "كلمة المرور مطلوبة",
-            "password_length": "يجب أن تكون كلمة المرور 6 أحرف على الأقل"
+            "password_length": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+            "remember_me": "إبقني مسجلاً للدخول",
+            "submit": "تسجيل الدخول",
+            "no_account": "ليس لديك حساب؟",
+            "sign_up_link": "إنشاء حساب"
         },
         "signup": {
+            "title": "أنشئ حسابك",
+            "subtitle": "انضم إلى Writiva لتقرأ وتكتب وتُسمَع صوتك.",
+            "name_label": "الاسم",
+            "name_hint": "أدخل اسمك الكامل",
             "name_required": "الاسم مطلوب",
-            "password_mismatch": "كلمتا المرور غير متطابقتين"
+            "confirm_password_label": "تأكيد كلمة المرور",
+            "confirm_password_hint": "أعد إدخال كلمة المرور",
+            "password_mismatch": "كلمتا المرور غير متطابقتين",
+            "submit": "إنشاء حساب",
+            "have_account": "لديك حساب بالفعل؟",
+            "sign_in_link": "تسجيل الدخول"
         }
     },
     "roles": {
@@ -52,17 +68,59 @@
         "author": "كاتب",
         "reader": "قارئ"
     },
-    "role_picker": {
-        "title": "من يكتب اليوم؟",
-        "subtitle": "أداة مؤقتة لاختيار الدور أثناء بناء الأساس — سيتم استبدالها بتسجيل دخول حقيقي في اليوم الثالث.",
-        "continue_as": "المتابعة كـ {}"
-    },
     "home": {
         "welcome_title": "مرحباً، {}",
         "welcome_subtitle": "هذه الشاشة مؤقتة — سيتم استبدالها بمحتواها الحقيقي لاحقاً في خطة البناء.",
-        "sign_out": "تغيير الدور",
+        "sign_out": "تسجيل الخروج",
         "tab_home": "الرئيسية",
         "tab_settings": "الإعدادات"
+    },
+    "feed": {
+        "tab_label": "الرئيسية",
+        "all_categories": "الكل",
+        "search_label": "بحث",
+        "search_hint": "ابحث عن مقالات أو كُتّاب...",
+        "trending_title": "الأكثر رواجاً",
+        "empty_title": "لا توجد مقالات",
+        "empty_message": "جرّب بحثاً أو تصنيفاً مختلفاً."
+    },
+    "explore": {
+        "tab_label": "استكشف",
+        "empty_title": "الاستكشاف قريباً",
+        "empty_message": "ستظهر هنا مجموعات مختارة وأبرز الكُتّاب."
+    },
+    "write": {
+        "tab_label": "اكتب",
+        "title": "اكتب",
+        "drafts_tab": "المسودات",
+        "published_tab": "المنشورة",
+        "draft_status": "مسودة",
+        "published_status": "منشور",
+        "empty_drafts_title": "لا توجد مسودات بعد",
+        "empty_published_title": "لم تنشر شيئاً بعد",
+        "compose_coming_soon": "كتابة منشور جديد ستكون متاحة قريباً."
+    },
+    "notifications": {
+        "tab_label": "الإشعارات",
+        "empty_title": "لا توجد إشعارات بعد",
+        "empty_message": "سنُعلمك عند وجود ما يستدعي انتباهك."
+    },
+    "profile": {
+        "tab_label": "حسابي",
+        "email_unverified": "البريد الإلكتروني غير مُفعّل"
+    },
+    "comments": {
+        "title": "التعليقات ({})",
+        "empty_title": "لا توجد تعليقات بعد",
+        "composer_label": "تعليق",
+        "composer_hint": "اكتب تعليقاً...",
+        "delete_title": "حذف التعليق؟",
+        "delete_message": "لا يمكن التراجع عن هذا الإجراء."
+    },
+    "time": {
+        "today": "اليوم",
+        "yesterday": "أمس",
+        "days_ago": "منذ {} أيام"
     },
     "tagline": "اقرأ • اكتب • كن مسموعًا"
 }

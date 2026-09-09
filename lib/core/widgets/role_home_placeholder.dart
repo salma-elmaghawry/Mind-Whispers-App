@@ -13,6 +13,8 @@ import 'package:mind_whispers_app/core/theme/controller/theme_cubit.dart';
 import 'package:mind_whispers_app/core/widgets/adaptive_scaffold.dart';
 import 'package:mind_whispers_app/core/widgets/app_button.dart';
 import 'package:mind_whispers_app/core/widgets/app_card.dart';
+import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Shared shell for the three role homes until each gets its real screens
@@ -122,13 +124,10 @@ class _SettingsTab extends StatelessWidget {
     );
   }
 
-  Future<void> _switchRole(BuildContext context) async {
-    await getIt<SharedPreferences>().remove('user_role');
+  Future<void> _signOut(BuildContext context) async {
+    await context.read<AuthCubit>().logout();
     if (!context.mounted) return;
-    context.pushNamedAndRemoveUntil(
-      Routes.rolePicker,
-      predicate: (_) => false,
-    );
+    context.pushNamedAndRemoveUntil(Routes.login, predicate: (_) => false);
   }
 
   @override
@@ -170,11 +169,17 @@ class _SettingsTab extends StatelessWidget {
           ),
         ),
         verticalSpace(28),
-        AppButton(
-          label: 'home.sign_out'.tr(),
-          icon: Icons.swap_horiz_rounded,
-          variant: AppButtonVariant.outlined,
-          onPressed: () => _switchRole(context),
+        BlocBuilder<AuthCubit, AuthState>(
+          builder: (context, state) {
+            final isSigningOut = state.isLoading && state.action == AuthAction.logout;
+            return AppButton(
+              label: 'home.sign_out'.tr(),
+              icon: Icons.logout_rounded,
+              variant: AppButtonVariant.outlined,
+              isLoading: isSigningOut,
+              onPressed: isSigningOut ? null : () => _signOut(context),
+            );
+          },
         ),
       ],
     );

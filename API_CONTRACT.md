@@ -4,9 +4,11 @@ Handoff spec for the backend team building the Laravel API alongside the Flutter
 
 Flutter ships against fake datasources that mirror these shapes exactly, so when a real endpoint goes live, only the datasource implementation is swapped — no UI or Cubit changes.
 
+> **Auth is live.** The `/auth/*` section below is superseded by the real OpenAPI spec at `api-1.json` (repo root) and is already integrated in `lib/features/auth/`. It differs from the original draft in a few ways: no `/v1` prefix on the base URL, a required `device_name` per request (Sanctum, one token per device), `remember` for a 30-day vs. 24-hour token, and `roles` as an array rather than a single `role` string. Posts/Categories/Comments/Profile/Users below are still the draft — not yet implemented against a real backend.
+
 ## Conventions
 
-- Base URL: `/api/v1`
+- Base URL: `/api/v1` for the draft endpoints below. The live auth server is `https://mind-whispers.laravel.cloud/api` (no `/v1` — see api-1.json).
 - Auth: Laravel Sanctum, bearer token — `Authorization: Bearer {token}`
 - Content type: `application/json`
 - Roles: `admin` | `author` | `reader`
@@ -48,7 +50,7 @@ Paginated list:
 
 ## Resource shapes
 
-**User**
+**User** (draft shape below — the real, live shape from api-1.json's `UserResource` is `{ id, name, email, email_verified_at, roles: string[], created_at }`; no `avatar_url`/`bio`/`is_active` yet)
 ```json
 {
   "id": 1,
@@ -100,14 +102,16 @@ Paginated list:
 
 ## Endpoints
 
-### Auth
+### Auth — live (see api-1.json, not the draft columns below)
 
 | Method | Path | Auth | Body | Returns |
 |---|---|---|---|---|
-| POST | `/auth/register` | – | `name, email, password, password_confirmation` | `{ user, token }` |
-| POST | `/auth/login` | – | `email, password` | `{ user, token }` |
-| POST | `/auth/logout` | ✓ | – | `{ message }` |
+| POST | `/auth/register` | – | `name, email, password, password_confirmation, device_name` | 201 `{ user, token, expires_at }` |
+| POST | `/auth/login` | – | `email, password, device_name, remember?` | 200 `{ user, token, expires_at }` |
+| POST | `/auth/logout` | ✓ | `device_name` (must match the one used to log in) | `{ message }` |
 | GET | `/auth/me` | ✓ | – | `{ user }` |
+
+`device_name` is a stable per-install identifier (the app generates and persists a UUID — see `DeviceIdProvider`). Without `remember: true` the token expires in 24 hours; with it, 30 days. A new account's `email_verified_at` stays `null` until the verification email's link is opened, but the app doesn't block usage on that.
 
 ### Profile
 

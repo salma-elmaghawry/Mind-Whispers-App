@@ -19,6 +19,10 @@ class AppColors {
   static const Color textPrimaryDark = Color(0xFFF2F1EE);
   static const Color textSecondaryDark = Color(0xFFAEAEAE);
 
+  // Post engagement affordances (like heart) — deliberately outside the
+  // read/write brand pair since "liked" is a universal red, not a role color.
+  static const Color like = Color(0xFFE8547A);
+
   // Status Colors
   static const Color error = Color(0xFFBA1A1A);
   static const Color success = Color(0xFF2E6F5B);
