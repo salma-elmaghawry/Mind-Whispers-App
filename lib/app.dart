@@ -12,6 +12,8 @@ import 'package:mind_whispers_app/core/theme/controller/theme_state.dart';
 class MindWhispersApp extends StatelessWidget {
   const MindWhispersApp({super.key});
 
+  static final _appRouter = AppRouter();
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -32,7 +34,8 @@ class MindWhispersApp extends StatelessWidget {
                 themeMode: themeState.themeMode,
                 scrollBehavior: const _NoGlowScrollBehavior(),
                 debugShowCheckedModeBanner: false,
-                onGenerateRoute: AppRouter().generateRoute,
+                onGenerateRoute: _appRouter.generateRoute,
+                onUnknownRoute: _appRouter.onUnknownRoute,
                 initialRoute: Routes.splash,
               ),
             );

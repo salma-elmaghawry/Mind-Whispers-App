@@ -1,10 +1,12 @@
-/// Endpoint paths matching API_CONTRACT.md at the repo root.
-/// Relative to the Dio instance's `baseUrl` (configured in [DioClient]
-/// from the `API_BASE_URL` .env value) — pass to Dio as-is.
+/// Endpoint paths. Auth matches the live OpenAPI spec in api-1.json at the
+/// repo root; everything else still matches the draft in API_CONTRACT.md
+/// pending its own backend work. Relative to the Dio instance's `baseUrl`
+/// (configured in [DioClient] from the `API_BASE_URL` .env value) — pass to
+/// Dio as-is.
 class ApiEndpoints {
   ApiEndpoints._();
 
-  // Auth
+  // Auth (see api-1.json)
   static const String register = '/auth/register';
   static const String login = '/auth/login';
   static const String logout = '/auth/logout';

@@ -1,19 +1,19 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mind_whispers_app/core/animations/animations.dart';
-import 'package:mind_whispers_app/core/auth/app_role.dart';
 import 'package:mind_whispers_app/core/helpers/extensions.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
-import 'package:mind_whispers_app/core/injection/injection_container.dart';
 import 'package:mind_whispers_app/core/routes/routes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_cubit.dart';
 
-/// Boots the app and routes to the signed-in role's home, or the role
-/// picker when nobody is signed in yet. Will read the real session once
-/// AuthCubit ships on Day 3 — for now it reads the role stored by
-/// [RolePickerScreen].
+/// Boots the app and routes to the signed-in role's home, or the login
+/// screen when there's no valid session. [AuthCubit.checkAuthStatus] hits
+/// `/auth/me` to confirm any locally stored token is still valid — a
+/// Sanctum token can outlive the app (up to 30 days with `remember`) but
+/// be revoked or expired server-side, so local storage alone isn't trusted.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -29,13 +29,21 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _decideNextRoute() async {
-    await Future.delayed(const Duration(milliseconds: 900));
+    final authCubit = context.read<AuthCubit>();
+    // Keep the branded splash on screen for a minimum stretch (so the logo
+    // animation never just flashes by on a fast/local response) while the
+    // session check runs in parallel.
+    final minDelay = Future<void>.delayed(const Duration(milliseconds: 900));
+    await Future.wait([minDelay, authCubit.checkAuthStatus()]);
     if (!mounted) return;
 
-    final prefs = getIt<SharedPreferences>();
-    final role = AppRole.fromWire(prefs.getString('user_role'));
-
-    context.pushReplacementNamed(role?.homeRoute ?? Routes.rolePicker);
+    final state = authCubit.state;
+    if (state.isSuccess && state.user != null) {
+      final role = state.user!.primaryRole;
+      context.pushReplacementNamed(role?.homeRoute ?? Routes.unauthorized);
+    } else {
+      context.pushReplacementNamed(Routes.login);
+    }
   }
 
   @override
@@ -46,9 +54,9 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              'assets/icon/icon.png',
-              width: 140.w,
-              height: 140.w,
+              'assets/images/logo.png',
+              width: 180.w,
+              height: 180.w,
             ).fadeInScale(),
             verticalSpace(16),
             Text(

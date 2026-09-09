@@ -1,0 +1,382 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Mind Whispers Mobile API",
+    "version": "0.1.0",
+    "description": "Mobile API for Mind Whispers. Send `Accept: application/json` on every request.\n\n## Authentication\n\n1. Call **Register** or **Login** with a stable `device_name` (for example the phone model or a generated UUID for that install).\n2. Persist `token` and send `Authorization: Bearer {token}` on later requests (including **Me**).\n3. After **Register**, a verification email is sent. `email_verified_at` stays `null` until the user opens the link (the same website verification link as web signup).\n4. On **Login**, send `remember: true` to keep the session for 30 days. Without it, the token expires after 24 hours. Use `expires_at` to know when to ask the user to sign in again.\n5. On **Logout**, send the Bearer token and the same `device_name` to revoke that device's session."
+  },
+  "servers": [
+    {
+      "url": "https://mind-whispers.laravel.cloud/api"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth"
+    }
+  ],
+  "security": [
+    {
+      "http": []
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "operationId": "auth.register",
+        "description": "Create an account, send a verification email, and return an access token. `device_name` is required. The token expires in 24 hours, same as login without `remember`. The user can use the app while `email_verified_at` is still null until they tap the link in the email.",
+        "summary": "Register",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/UserResource"
+                    },
+                    "token": {
+                      "type": "string"
+                    },
+                    "expires_at": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "user",
+                    "token",
+                    "expires_at"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        },
+        "security": []
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "auth.login",
+        "description": "Authenticate with email and password and return an access token. `device_name` is required. Pass `remember: true` for a 30-day token; otherwise the token expires in 24 hours. A new login on the same device name replaces the previous token for that device.",
+        "summary": "Login",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/UserResource"
+                    },
+                    "token": {
+                      "type": "string"
+                    },
+                    "expires_at": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "user",
+                    "token",
+                    "expires_at"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        },
+        "security": []
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "auth.me",
+        "description": "Return the authenticated user.",
+        "summary": "Current user",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/UserResource"
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "auth.logout",
+        "description": "Revoke all access tokens issued for `device_name`. Send the current Bearer token plus the same `device_name` used at login or register.",
+        "summary": "Logout",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "http": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          },
+          "device_name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "remember": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "device_name"
+        ],
+        "title": "LoginRequest"
+      },
+      "LogoutRequest": {
+        "type": "object",
+        "properties": {
+          "device_name": {
+            "type": "string",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "device_name"
+        ],
+        "title": "LogoutRequest"
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 255
+          },
+          "password": {
+            "type": "string"
+          },
+          "password_confirmation": {
+            "type": "string"
+          },
+          "device_name": {
+            "type": "string",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password",
+          "password_confirmation",
+          "device_name"
+        ],
+        "title": "RegisterRequest"
+      },
+      "UserResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "email_verified_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "email_verified_at",
+          "roles",
+          "created_at"
+        ],
+        "title": "UserResource"
+      }
+    },
+    "responses": {
+      "ValidationException": {
+        "description": "Validation error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Errors overview."
+                },
+                "errors": {
+                  "type": "object",
+                  "description": "A detailed description of each field that failed validation.",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "required": [
+                "message",
+                "errors"
+              ]
+            }
+          }
+        }
+      },
+      "AuthenticationException": {
+        "description": "Unauthenticated",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error overview."
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
