@@ -10,7 +10,9 @@
         "skip": "تخطي",
         "done": "تم",
         "loading": "جارٍ التحميل...",
-        "no_data": "لا توجد بيانات"
+        "no_data": "لا توجد بيانات",
+        "coming_soon_title": "قريباً",
+        "go_back": "العودة"
     },
     "preferences": {
         "language": "اللغة",
@@ -80,14 +82,19 @@
         "all_categories": "الكل",
         "search_label": "بحث",
         "search_hint": "ابحث عن مقالات أو كُتّاب...",
-        "trending_title": "الأكثر رواجاً",
         "empty_title": "لا توجد مقالات",
         "empty_message": "جرّب بحثاً أو تصنيفاً مختلفاً."
     },
     "explore": {
         "tab_label": "استكشف",
-        "empty_title": "الاستكشاف قريباً",
-        "empty_message": "ستظهر هنا مجموعات مختارة وأبرز الكُتّاب."
+        "title": "استكشف",
+        "subtitle": "واجهات منسقة مختارة لقرّاء مثلك.",
+        "writers_title": "كُتّاب لمتابعتهم",
+        "recommended_title": "مقالات موصى بها",
+        "follow": "متابعة",
+        "following": "متابَع",
+        "followers_count": "{} متابع",
+        "post_coming_soon": "صفحة المقال الكاملة في الاستكشاف ستتوفر قريباً."
     },
     "write": {
         "tab_label": "اكتب",
@@ -102,6 +109,8 @@
     },
     "notifications": {
         "tab_label": "الإشعارات",
+        "title": "الإشعارات",
+        "mark_all_read": "تعليم الكل كمقروء",
         "empty_title": "لا توجد إشعارات بعد",
         "empty_message": "سنُعلمك عند وجود ما يستدعي انتباهك."
     },

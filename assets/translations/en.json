@@ -10,7 +10,9 @@
         "skip": "Skip",
         "done": "Done",
         "loading": "Loading...",
-        "no_data": "No data available"
+        "no_data": "No data available",
+        "coming_soon_title": "Coming soon",
+        "go_back": "Go back"
     },
     "preferences": {
         "language": "Language",
@@ -80,14 +82,19 @@
         "all_categories": "All",
         "search_label": "Search",
         "search_hint": "Search for posts, authors...",
-        "trending_title": "Trending",
         "empty_title": "No posts found",
         "empty_message": "Try a different search or category."
     },
     "explore": {
         "tab_label": "Explore",
-        "empty_title": "Explore is coming soon",
-        "empty_message": "Curated shelves and author spotlights will show up here."
+        "title": "Discover",
+        "subtitle": "Curated shelves picked for readers like you.",
+        "writers_title": "Writers to follow",
+        "recommended_title": "Recommended reads",
+        "follow": "Follow",
+        "following": "Following",
+        "followers_count": "{} followers",
+        "post_coming_soon": "Full post pages for Explore are coming soon."
     },
     "write": {
         "tab_label": "Write",
@@ -102,6 +109,8 @@
     },
     "notifications": {
         "tab_label": "Notifications",
+        "title": "Notifications",
+        "mark_all_read": "Mark all as read",
         "empty_title": "No notifications yet",
         "empty_message": "We'll let you know when something needs your attention."
     },

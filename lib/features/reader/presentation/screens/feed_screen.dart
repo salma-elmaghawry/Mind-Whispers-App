@@ -14,12 +14,10 @@ import 'package:mind_whispers_app/features/reader/presentation/cubit/feed/feed_c
 import 'package:mind_whispers_app/features/reader/presentation/cubit/feed/feed_state.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/category_chips_bar.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/post_card.dart';
-import 'package:mind_whispers_app/features/reader/presentation/widgets/trending_row.dart';
 
-/// The Feed tab of [ReaderHomeScreen]: search, category filter, a trending
-/// shelf, and an infinite-scroll list of published posts (see
-/// API_CONTRACT.md's `/posts` and `/categories`, served today by
-/// [ReaderFakeDataSource]).
+/// The Feed tab of [ReaderHomeScreen]: search, category filter, and an
+/// infinite-scroll list of published posts (see API_CONTRACT.md's
+/// `/posts` and `/categories`, served today by [ReaderFakeDataSource]).
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
 
@@ -28,8 +26,6 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
-  static const int _trendingCount = 6;
-
   final _scrollController = ScrollController();
   final _searchController = TextEditingController();
 
@@ -93,14 +89,7 @@ class _FeedScreenState extends State<FeedScreen> {
                         selectedCategoryId: state.selectedCategoryId,
                         onSelected: (id) => context.read<FeedCubit>().selectCategory(id),
                       ),
-                      if (state.posts.isNotEmpty) ...[
-                        verticalSpace(20),
-                        TrendingRow(
-                          posts: state.posts.take(_trendingCount).toList(),
-                          onTap: (post) => context.pushNamed(Routes.postDetail, arguments: post.id),
-                        ),
-                      ],
-                      verticalSpace(4),
+                      verticalSpace(16),
                     ],
                   ),
                 ),

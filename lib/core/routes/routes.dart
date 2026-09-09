@@ -13,5 +13,9 @@ class Routes {
   /// Pass the post's `int` id as `settings.arguments`.
   static const String postDetail = '/post-detail';
 
+  // shared
+  /// Pass a `ComingSoonArgs` as `settings.arguments`.
+  static const String comingSoon = '/coming-soon';
+
   // add feature routes below
 }
