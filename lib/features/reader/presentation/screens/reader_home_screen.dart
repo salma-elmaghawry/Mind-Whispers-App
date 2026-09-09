@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
 import 'package:mind_whispers_app/core/injection/injection_container.dart';
 import 'package:mind_whispers_app/core/widgets/adaptive_scaffold.dart';
@@ -11,10 +12,10 @@ import 'package:mind_whispers_app/features/reader/presentation/screens/notificat
 import 'package:mind_whispers_app/features/reader/presentation/screens/profile_screen.dart';
 import 'package:mind_whispers_app/features/reader/presentation/screens/write_screen.dart';
 
-/// The reader experience: Home (feed, search, category filters, trending),
-/// Explore, Write (drafts/published), Notifications, and Profile. Post
-/// detail and its comment thread are a separate pushed route (see
-/// [PostDetailScreen] / `Routes.postDetail`), not a tab.
+/// The reader experience: Home (feed, search, category filters), Explore,
+/// Write (drafts/published), Notifications, and Profile. Post detail and
+/// its comment thread are a separate pushed route (see [PostDetailScreen]
+/// / `Routes.postDetail`), not a tab.
 class ReaderHomeScreen extends StatelessWidget {
   const ReaderHomeScreen({super.key});
 
@@ -40,16 +41,17 @@ class _ReaderHomeViewState extends State<_ReaderHomeView> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return AdaptiveScaffold(
       appBar: AppBar(
-        centerTitle: false,
+        centerTitle: true,
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.menu_book_rounded, color: colorScheme.primary),
+            Image.asset('assets/images/logo.png', height: 30.h, excludeFromSemantics: true),
             horizontalSpace(8),
-            Text('app_name'.tr()),
+            Text('app_name'.tr(), style: textTheme.displaySmall),
           ],
         ),
       ),
@@ -104,10 +106,10 @@ class _ComposeBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 32,
-      height: 32,
+      width: 52,
+      height: 52,
       decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      child: const Icon(Icons.add_rounded, color: Colors.white, size: 20),
+      child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
     );
   }
 }

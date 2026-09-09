@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mind_whispers_app/core/auth/app_role.dart';
 import 'package:mind_whispers_app/core/injection/injection_container.dart';
 import 'package:mind_whispers_app/core/routes/routes.dart';
+import 'package:mind_whispers_app/core/widgets/coming_soon_screen.dart';
 import 'package:mind_whispers_app/core/widgets/unauthorized_screen.dart';
 import 'package:mind_whispers_app/features/admin/screens/admin_home_screen.dart';
 import 'package:mind_whispers_app/features/author/screens/author_home_screen.dart';
@@ -57,6 +58,9 @@ class AppRouter {
             child: PostDetailScreen(postId: postId),
           ),
         );
+      case Routes.comingSoon:
+        final args = settings.arguments as ComingSoonArgs;
+        return MaterialPageRoute(builder: (_) => ComingSoonScreen(args: args));
 
       // Register each new screen here as features are created.
       // Pass arguments via `settings.arguments`.
@@ -72,9 +76,7 @@ class AppRouter {
   /// [Routes.splash] at launch.
   Route<dynamic> onUnknownRoute(RouteSettings settings) {
     return MaterialPageRoute(
-      builder: (_) => Scaffold(
-        body: Center(child: Text('No route defined for ${settings.name}')),
-      ),
+      builder: (_) => Scaffold(body: Center(child: Text('No route defined for ${settings.name}'))),
     );
   }
 
@@ -88,9 +90,7 @@ class AppRouter {
     required List<AppRole> allowedRoles,
     required WidgetBuilder builder,
   }) {
-    final role = AppRole.fromWire(
-      getIt<SharedPreferences>().getString(userRolePrefsKey),
-    );
+    final role = AppRole.fromWire(getIt<SharedPreferences>().getString(userRolePrefsKey));
 
     if (role != null && allowedRoles.contains(role)) {
       return MaterialPageRoute(builder: builder);
