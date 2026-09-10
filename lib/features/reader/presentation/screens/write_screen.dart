@@ -72,7 +72,7 @@ class _WriteScreenState extends State<WriteScreen> {
     final filtered = _items.where((item) => item.status == _selected).toList();
 
     // No AppBar here — this is a tab inside [ReaderHomeScreen]'s
-    // AdaptiveScaffold, which already renders the shared "Writiva" bar. A
+    // AdaptiveScaffold, which already renders the shared "Mind Whispers" bar. A
     // second AppBar would stack a redundant header under it.
     return Scaffold(
       body: Column(

@@ -1,14 +1,14 @@
-# Writiva
+# Mind Whispers
 
 <p align="center">
-  <img src="assets/images/logo.png" alt="Writiva logo" width="140">
+  <img src="assets/images/logo.svg" alt="Mind Whispers logo" width="140">
 </p>
 
 **Read • Write • Be Heard**
 
-Writiva is a place where readers discover new worlds and writers share their voices. It's a Flutter app that turns ideas into stories, built around three roles: **Reader**, **Author**, and **Admin**.
+Mind Whispers is a place where readers discover new worlds and writers share their voices. It's a Flutter app that turns ideas into stories, built around three roles: **Reader**, **Author**, and **Admin**.
 
-> The Flutter package and internal class names still use the working codename `mind_whispers_app`; the product-facing brand is Writiva.
+> The Flutter package and internal class names use `mind_whispers_app`, matching the product name.
 
 ## Brand pillars
 
@@ -20,7 +20,7 @@ Writiva is a place where readers discover new worlds and writers share their voi
 
 ## Demo
 
-[![Watch the Writiva demo](https://img.youtube.com/vi/GUZTVza22eY/hqdefault.jpg)](https://youtube.com/shorts/GUZTVza22eY)
+[![Watch the Mind Whispers demo](https://img.youtube.com/vi/GUZTVza22eY/hqdefault.jpg)](https://youtube.com/shorts/GUZTVza22eY)
 
 A short walkthrough of the Reader experience — splash, feed, post detail, and the rest of the tab shell.
 
@@ -75,10 +75,10 @@ The Feed and post/comment data come from a live-shaped fake data source (`Reader
 
 Role badges: Reader `#2E6F5B` · Author `#A78BFA` · Admin `#4A3B63`.
 
-See `docs/branding/writiva_brand_board.png` for the brand identity board (logo, icon, typography, and mood imagery), and `docs/branding/writiva_app_moodboard.png` for a moodboard of the shipped features and every Reader screen, built from the real screenshots above. This palette is implemented in `lib/core/theme/app_colors.dart`, and the app icon across Android/iOS/web is generated from `assets/icon/icon.png` via `flutter_launcher_icons`.
+See `docs/branding/mind_whispers_brand_board.png` for the brand identity board (logo, icon, typography, and mood imagery), and `docs/branding/mind_whispers_app_moodboard.png` for a moodboard of the shipped features and every Reader screen, built from the real screenshots above. This palette is implemented in `lib/core/theme/app_colors.dart`, and the app icon across Android/iOS/web is generated from `assets/icon/icon.png` via `flutter_launcher_icons`.
 
 <p align="center">
-  <img src="docs/branding/writiva_app_moodboard.png" alt="Writiva features and screens moodboard" width="720">
+  <img src="docs/branding/mind_whispers_app_moodboard.png" alt="Mind Whispers features and screens moodboard" width="720">
 </p>
 
 ## Architecture
