@@ -1,5 +1,5 @@
 {
-    "app_name": "Writiva",
+    "app_name": "Mind Whispers",
     "common": {
         "ok": "OK",
         "cancel": "Cancel",
@@ -53,7 +53,7 @@
         },
         "signup": {
             "title": "Create your account",
-            "subtitle": "Join Writiva to read, write, and be heard.",
+            "subtitle": "Join Mind Whispers to read, write, and be heard.",
             "name_label": "Name",
             "name_hint": "Enter your full name",
             "name_required": "Name is required",

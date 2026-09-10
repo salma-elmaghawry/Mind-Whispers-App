@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTextStyles {
-  // Headings — Playfair Display, per the Writiva brand type pairing
+  // Headings — Playfair Display, per the Mind Whispers brand type pairing
   static TextStyle get font32Bold =>
       GoogleFonts.playfairDisplay(fontSize: 32.sp, fontWeight: FontWeight.bold);
 
@@ -16,7 +16,7 @@ class AppTextStyles {
   static TextStyle get font20Bold =>
       GoogleFonts.playfairDisplay(fontSize: 20.sp, fontWeight: FontWeight.bold);
 
-  // Body — Inter, per the Writiva brand type pairing
+  // Body — Inter, per the Mind Whispers brand type pairing
   static TextStyle get font18Normal =>
       GoogleFonts.inter(fontSize: 18.sp, fontWeight: FontWeight.normal);
   static TextStyle get font16Normal =>

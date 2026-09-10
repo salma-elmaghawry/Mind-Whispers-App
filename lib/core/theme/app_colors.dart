@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Primary Colors — Writiva brand palette (book = read, feather = write)
+  // Primary Colors — Mind Whispers brand palette
   static const Color primary = Color(0xFF2E6F5B);
   static const Color secondary = Color(0xFFA78BFA);
   static const Color accent = Color(0xFFEBDFFB);

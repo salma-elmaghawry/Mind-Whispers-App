@@ -1,5 +1,5 @@
 {
-    "app_name": "Writiva",
+    "app_name": "Mind Whispers",
     "common": {
         "ok": "حسناً",
         "cancel": "إلغاء",
@@ -53,7 +53,7 @@
         },
         "signup": {
             "title": "أنشئ حسابك",
-            "subtitle": "انضم إلى Writiva لتقرأ وتكتب وتُسمَع صوتك.",
+            "subtitle": "انضم إلى Mind Whispers لتقرأ وتكتب وتُسمَع صوتك.",
             "name_label": "الاسم",
             "name_hint": "أدخل اسمك الكامل",
             "name_required": "الاسم مطلوب",

@@ -1,5 +1,5 @@
 name: mind_whispers_app
-description: "Writiva — a community for readers and writers to discover stories, share ideas, and be heard."
+description: "Mind Whispers — a community for readers and writers to discover stories, share ideas, and be heard."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -64,10 +64,11 @@ dev_dependencies:
 flutter_launcher_icons:
   image_path: "assets/icon/icon.png"
   android: true
-  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_background: "#FAF8F6"
   adaptive_icon_foreground: "assets/icon/icon_foreground.png"
   ios: true
   remove_alpha_ios: true
+  background_color_ios: "#FAF8F6"
   web:
     generate: true
     image_path: "assets/icon/icon.png"

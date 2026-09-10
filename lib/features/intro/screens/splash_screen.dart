@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mind_whispers_app/core/animations/animations.dart';
 import 'package:mind_whispers_app/core/helpers/extensions.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
@@ -53,8 +54,8 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(
-              'assets/images/logo.png',
+            SvgPicture.asset(
+              'assets/images/logo.svg',
               width: 180.w,
               height: 180.w,
             ).fadeInScale(),
