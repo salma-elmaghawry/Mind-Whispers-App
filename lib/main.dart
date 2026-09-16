@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mind_whispers_app/app.dart';
+import 'package:mind_whispers_app/mind_whispers_app.dart';
 import 'package:mind_whispers_app/core/injection/injection_container.dart';
 import 'package:mind_whispers_app/core/theme/controller/theme_cubit.dart';
 import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_cubit.dart';
@@ -28,11 +28,7 @@ void main() async {
       child: MultiBlocProvider(
         providers: [
           BlocProvider<ThemeCubit>(create: (context) => getIt<ThemeCubit>()),
-          // AuthCubit is global (not route-scoped) so SplashScreen, the
-          // router guard, and every screen below it share one session.
-          // checkAuthStatus() is triggered by SplashScreen itself rather
-          // than here, so its result can't race the BlocProvider's own
-          // subscription setup.
+
           BlocProvider<AuthCubit>(create: (context) => getIt<AuthCubit>()),
         ],
         child: const MindWhispersApp(),

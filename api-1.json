@@ -1,0 +1,2166 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Mind Whispers Mobile API",
+    "version": "0.1.0",
+    "description": "Mobile API for Mind Whispers. Send `Accept: application/json` on every request.\n\n## Authentication\n\n1. Call **Register** or **Login** with a stable `device_name` (for example the phone model or a generated UUID for that install).\n2. Persist `token` and send `Authorization: Bearer {token}` on later requests (including **Me**).\n3. After **Register**, a verification email is sent. `email_verified_at` stays `null` until the user opens the link (the same website verification link as web signup).\n4. On **Login**, send `remember: true` to keep the session for 30 days. Without it, the token expires after 24 hours. Use `expires_at` to know when to ask the user to sign in again.\n5. On **Logout**, send the Bearer token and the same `device_name` to revoke that device's session.\n\n## Roles\n\nSame permissions as the website. `GET /auth/me` returns `roles`. Staff (`create-post`) can read premium content without a subscription.\n\n- **Guest** — `GET /posts`, `GET /posts/{id}` (published only), `GET /categories`, `GET /tags`. Premium `content` is `null`.\n- **Registered user** — no post permissions. Same as guest. Premium `content` only with an active Premium subscription (`hasPremiumAccess`). Register does not assign a role.\n- **Author** — `create-post`, `edit-post`, `delete-post`, `publish-post`. Create/publish/unpublish **own** posts. `GET /posts/manage` is own posts only. Cannot edit someone else's post.\n- **Editor** — `create-post`, `edit-any-post`, `delete-any-post`, `publish-post`. `GET /posts/manage` is **all** authors and statuses; can edit/publish/unpublish any post.\n- **Admin** — all permissions, including `manage-users`, `manage-roles`, `manage-newsletters`, `manage-subscriptions`. For posts, same as editor.\n\n`publish-post` is required to set status to `scheduled`, `published`, or `archived`. `status: draft` unpublishes.\n\n## Posts\n\n- `GET /posts` is the public published feed (web `/blog`).\n- `GET /posts/manage` is the staff list (web `/posts`): authors see only their posts; editors/admins see all.\n- `GET /posts/{id}` is public detail. Premium `content` is `null` unless the user has premium access.\n- `GET /posts/{id}/comments` is public for readable published posts (premium needs access). Paginated. `POST /posts/{id}/comments` requires login, same as the website.\n- `POST /posts` and `PATCH /posts/{id}` follow the permissions above.\n\n## Categories\n\nSame as the website `/categories` screens.\n\n- `GET /categories` is public (for post filters). Search with `q`. `posts_count` is published posts only.\n- `POST /categories`, `PATCH /categories/{id}`, `DELETE /categories/{id}` — `manage-roles` (admin). Delete detaches the category from posts first.\n\n## Tags\n\nSame pattern as categories. Website `/tags` screens for write.\n\n- `GET /tags` is public (for post filters). Search with `q` on name. `posts_count` is published posts only.\n- `POST /tags`, `PATCH /tags/{id}`, `DELETE /tags/{id}` — `manage-roles` (admin). Delete detaches the tag from posts first.\n\n## Users\n\nSame as the website `/users` screens. Requires `manage-users` (admin).\n\n- `GET /users` — list, `q` (name/email), `role` (`all` or a role name).\n- `POST /users`, `GET /users/{id}`, `PATCH /users/{id}`, `DELETE /users/{id}`. Cannot delete yourself. Password requires `password_confirmation` (optional on PATCH unless `password` is sent).\n- `GET /roles` — role names for the filter and create/edit checkboxes."
+  },
+  "servers": [
+    {
+      "url": "https://mind-whispers.laravel.cloud/api"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Posts"
+    },
+    {
+      "name": "Categories"
+    },
+    {
+      "name": "Tags"
+    },
+    {
+      "name": "Comments"
+    },
+    {
+      "name": "Users"
+    }
+  ],
+  "security": [
+    {
+      "http": []
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "operationId": "auth.register",
+        "description": "Create an account, send a verification email, and return an access token. `device_name` is required. The token expires in 24 hours, same as login without `remember`. The user can use the app while `email_verified_at` is still null until they tap the link in the email.",
+        "summary": "Register",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/UserResource"
+                    },
+                    "token": {
+                      "type": "string"
+                    },
+                    "expires_at": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "user",
+                    "token",
+                    "expires_at"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        },
+        "security": []
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "auth.login",
+        "description": "Authenticate with email and password and return an access token. `device_name` is required. Pass `remember: true` for a 30-day token; otherwise the token expires in 24 hours. A new login on the same device name replaces the previous token for that device.",
+        "summary": "Login",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/UserResource"
+                    },
+                    "token": {
+                      "type": "string"
+                    },
+                    "expires_at": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "user",
+                    "token",
+                    "expires_at"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        },
+        "security": []
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "auth.me",
+        "description": "Return the authenticated user.",
+        "summary": "Current user",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/UserResource"
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "auth.logout",
+        "description": "Revoke all access tokens issued for `device_name`. Send the current Bearer token plus the same `device_name` used at login or register.",
+        "summary": "Logout",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/posts": {
+      "get": {
+        "operationId": "posts.index",
+        "description": "Public published feed. Filter with `q`, `category` (slug), `tag` (slug), `tags` (slugs), and `access` (`all`, `free`, `premium`). Matches the web blog listing. Send a Bearer token so `can_read` reflects premium/staff access.",
+        "summary": "Published posts",
+        "tags": [
+          "Posts"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 255
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 255
+            }
+          },
+          {
+            "name": "tag",
+            "in": "query",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 255
+            }
+          },
+          {
+            "name": "tags[]",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 255
+              }
+            }
+          },
+          {
+            "name": "access",
+            "in": "query",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "all",
+                "free",
+                "premium",
+                null
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `PostResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PostResource"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "operationId": "posts.store",
+        "description": "Requires `create-post`. Publishing or scheduling also requires `publish-post`. At least one category is required. `featured_image` is an image upload, max 2MB, same as the web form.",
+        "summary": "Create post",
+        "tags": [
+          "Posts"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/StorePostRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "`PostResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PostResource"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "author",
+                        "categories",
+                        "tags"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/posts/manage": {
+      "get": {
+        "operationId": "posts.manage",
+        "description": "Staff listing, same as web `/posts`. Requires `create-post`. Authors only see their own posts (any status). Editors and admins see every author and status. Filter with `q`, `status`, and `access`.",
+        "summary": "Manage posts",
+        "tags": [
+          "Posts"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 255
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "all",
+                "draft",
+                "scheduled",
+                "published",
+                "archived",
+                null
+              ]
+            }
+          },
+          {
+            "name": "access",
+            "in": "query",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "all",
+                "free",
+                "premium",
+                null
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `PostResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PostResource"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/posts/{post}": {
+      "patch": {
+        "operationId": "posts.update",
+        "description": "Partial update. Requires `create-post` plus `edit-post` on own posts or `edit-any-post`. Setting status to scheduled, published, or archived requires `publish-post`. Send `status: draft` to unpublish.",
+        "summary": "Update post",
+        "tags": [
+          "Posts"
+        ],
+        "parameters": [
+          {
+            "name": "post",
+            "in": "path",
+            "required": true,
+            "description": "The post ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePostRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`PostResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PostResource"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "author",
+                        "categories",
+                        "tags"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      },
+      "get": {
+        "operationId": "posts.show",
+        "description": "Published post by id. Drafts and scheduled posts return 404 unless the user can edit that post. Send a Bearer token to unlock premium `content` (active Premium subscription or `create-post`). Comments are `GET /posts/{id}/comments`.",
+        "summary": "Post detail",
+        "tags": [
+          "Posts"
+        ],
+        "parameters": [
+          {
+            "name": "post",
+            "in": "path",
+            "required": true,
+            "description": "The post ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`PostResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PostResource"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "author",
+                        "categories",
+                        "tags"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          }
+        },
+        "security": []
+      }
+    },
+    "/categories": {
+      "get": {
+        "operationId": "categories.index",
+        "description": "Public list for filters (name, slug, color, `posts_count` of published posts). Search with `q` on name and description. Paginated 10 per page, newest first. No auth.",
+        "summary": "List categories",
+        "tags": [
+          "Categories"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 255
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `CategoryResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryResource"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "operationId": "categories.store",
+        "description": "Same as web `/categories/create`. Requires `manage-roles`. `color` is a hex value like `#688dba`.",
+        "summary": "Create category",
+        "tags": [
+          "Categories"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreCategoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "`CategoryResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/categories/{category}": {
+      "patch": {
+        "operationId": "categories.update",
+        "description": "Partial update. Same as web `/categories/{id}/edit`. Requires `manage-roles`. Changing `name` updates the slug.",
+        "summary": "Update category",
+        "tags": [
+          "Categories"
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "description": "The category ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`CategoryResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "categories.destroy",
+        "description": "Removes the category from its posts, then deletes it. Same as web. Requires `manage-roles`.",
+        "summary": "Delete category",
+        "tags": [
+          "Categories"
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "description": "The category ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          }
+        }
+      }
+    },
+    "/tags": {
+      "get": {
+        "operationId": "tags.index",
+        "description": "Public list for filters (name, slug, `posts_count` of published posts). Search with `q` on name. Paginated 10 per page, newest first. No auth.",
+        "summary": "List tags",
+        "tags": [
+          "Tags"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 255
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `TagResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TagResource"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "operationId": "tags.store",
+        "description": "Same as web `/tags/create`. Requires `manage-roles`. `name` is required, min 2 characters, and unique.",
+        "summary": "Create tag",
+        "tags": [
+          "Tags"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreTagRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "`TagResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/tags/{tag}": {
+      "patch": {
+        "operationId": "tags.update",
+        "description": "Partial update. Same as web `/tags/{id}/edit`. Requires `manage-roles`. Changing `name` updates the slug.",
+        "summary": "Update tag",
+        "tags": [
+          "Tags"
+        ],
+        "parameters": [
+          {
+            "name": "tag",
+            "in": "path",
+            "required": true,
+            "description": "The tag ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTagRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`TagResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "tags.destroy",
+        "description": "Removes the tag from its posts, then deletes it. Same as web. Requires `manage-roles`.",
+        "summary": "Delete tag",
+        "tags": [
+          "Tags"
+        ],
+        "parameters": [
+          {
+            "name": "tag",
+            "in": "path",
+            "required": true,
+            "description": "The tag ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          }
+        }
+      }
+    },
+    "/posts/{post}/comments": {
+      "post": {
+        "operationId": "posts.comments.store",
+        "description": "Same as the website comment form. Requires a Bearer token. `content` is min 3 / max 1000. Optional `parent_id` replies to a top-level comment on this post. Status is approved. The post author is notified unless they commented on their own post.",
+        "summary": "Add comment",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "name": "post",
+            "in": "path",
+            "required": true,
+            "description": "The post ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreCommentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "`CommentResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/CommentResource"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "author",
+                        "replies"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      },
+      "get": {
+        "operationId": "posts.comments.index",
+        "description": "Paginated approved top-level comments (10 per page) with nested replies. Same visibility as the website post page: published posts only, and premium posts require Premium access or `create-post`. Use `page`.",
+        "summary": "Post comments",
+        "tags": [
+          "Comments"
+        ],
+        "parameters": [
+          {
+            "name": "post",
+            "in": "path",
+            "required": true,
+            "description": "The post ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `CommentResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentResource"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          }
+        },
+        "security": []
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "users.index",
+        "description": "Same as web `/users`. Requires `manage-users`. Filter with `q` (name or email) and `role` (`all` or a role name). Paginated 10 per page, newest first.",
+        "summary": "List users",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 255
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 255
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated set of `UserResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/UserResource"
+                      }
+                    },
+                    "links": {
+                      "type": "object",
+                      "properties": {
+                        "first": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "last": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "prev": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "next": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "first",
+                        "last",
+                        "prev",
+                        "next"
+                      ]
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "current_page": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "from": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "minimum": 1
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "links": {
+                          "type": "array",
+                          "description": "Generated paginator links.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "active": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "url",
+                              "label",
+                              "active"
+                            ]
+                          }
+                        },
+                        "path": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Base path for paginator generated URLs."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Number of items shown per page.",
+                          "minimum": 0
+                        },
+                        "to": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Number of the last item in the slice.",
+                          "minimum": 1
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of items being paginated.",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [
+                        "current_page",
+                        "from",
+                        "last_page",
+                        "links",
+                        "path",
+                        "per_page",
+                        "to",
+                        "total"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "links",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      },
+      "post": {
+        "operationId": "users.store",
+        "description": "Same as web `/users/create`. Requires `manage-users`. `roles` is an array of role names (at least one). Password min 8 characters and must match `password_confirmation`.",
+        "summary": "Create user",
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StoreUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "`UserResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    },
+    "/users/{user}": {
+      "get": {
+        "operationId": "users.show",
+        "description": "Requires `manage-users`.",
+        "summary": "User detail",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "path",
+            "required": true,
+            "description": "The user ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`UserResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "users.update",
+        "description": "Same as web `/users/{id}/edit`. Requires `manage-users`. Password is optional (min 8) and must match `password_confirmation` when sent. `roles` replaces the assigned roles when sent.",
+        "summary": "Update user",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "path",
+            "required": true,
+            "description": "The user ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`UserResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "users.destroy",
+        "description": "Same as web. Requires `manage-users`. You cannot delete your own account.",
+        "summary": "Delete user",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "path",
+            "required": true,
+            "description": "The user ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModelNotFoundException"
+          }
+        }
+      }
+    },
+    "/roles": {
+      "get": {
+        "operationId": "roles.index",
+        "description": "Role names for the user list filter and create/edit role checkboxes. Same as web `/users`. Requires `manage-users`.",
+        "summary": "List roles",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `RoleResource`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleResource"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationException"
+          },
+          "403": {
+            "$ref": "#/components/responses/AuthorizationException"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "http": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "AuthorResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "initials": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "initials"
+        ],
+        "title": "AuthorResource"
+      },
+      "CategoryResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "color": {
+            "type": "string"
+          },
+          "posts_count": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "color"
+        ],
+        "title": "CategoryResource"
+      },
+      "CommentResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "parent_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "author": {
+            "$ref": "#/components/schemas/AuthorResource"
+          },
+          "replies": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/CommentResource"
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "author"
+                  ]
+                }
+              ]
+            }
+          },
+          "created_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "parent_id",
+          "content",
+          "created_at"
+        ],
+        "title": "CommentResource"
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          },
+          "device_name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "remember": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "device_name"
+        ],
+        "title": "LoginRequest"
+      },
+      "LogoutRequest": {
+        "type": "object",
+        "properties": {
+          "device_name": {
+            "type": "string",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "device_name"
+        ],
+        "title": "LogoutRequest"
+      },
+      "PostResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "excerpt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "featured_image": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "is_premium": {
+            "type": "boolean"
+          },
+          "can_read": {
+            "type": "string"
+          },
+          "published_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "views_count": {
+            "type": "integer"
+          },
+          "comments_count": {
+            "type": "integer"
+          },
+          "author": {
+            "$ref": "#/components/schemas/AuthorResource"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryResource"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagResource"
+            }
+          },
+          "created_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "excerpt",
+          "featured_image",
+          "status",
+          "is_premium",
+          "can_read",
+          "published_at",
+          "views_count",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "PostResource"
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 255
+          },
+          "password": {
+            "type": "string"
+          },
+          "password_confirmation": {
+            "type": "string"
+          },
+          "device_name": {
+            "type": "string",
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password",
+          "password_confirmation",
+          "device_name"
+        ],
+        "title": "RegisterRequest"
+      },
+      "RoleResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "RoleResource"
+      },
+      "StoreCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1000
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$"
+          }
+        },
+        "required": [
+          "name",
+          "color"
+        ],
+        "title": "StoreCategoryRequest"
+      },
+      "StoreCommentRequest": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 1000
+          },
+          "parent_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "content"
+        ],
+        "title": "StoreCommentRequest"
+      },
+      "StorePostRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 255
+          },
+          "excerpt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "content": {
+            "type": "string",
+            "minLength": 10
+          },
+          "featured_image": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "binary",
+            "contentMediaType": "application/octet-stream",
+            "description": "Maximum file size: 2048 kilobytes."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "scheduled",
+              "published"
+            ]
+          },
+          "is_premium": {
+            "type": "boolean"
+          },
+          "scheduled_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "category_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1
+          },
+          "tag_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "integer"
+            }
+          }
+        },
+        "required": [
+          "title",
+          "content",
+          "status",
+          "category_ids"
+        ],
+        "title": "StorePostRequest"
+      },
+      "StoreTagRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "StoreTagRequest"
+      },
+      "StoreUserRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 255
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8
+          },
+          "password_confirmation": {
+            "type": "string",
+            "minLength": 8
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password",
+          "password_confirmation",
+          "roles"
+        ],
+        "title": "StoreUserRequest"
+      },
+      "TagResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "posts_count": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "slug"
+        ],
+        "title": "TagResource"
+      },
+      "UpdateCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1000
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$"
+          }
+        },
+        "title": "UpdateCategoryRequest"
+      },
+      "UpdatePostRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 255
+          },
+          "excerpt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "content": {
+            "type": "string",
+            "minLength": 10
+          },
+          "featured_image": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "binary",
+            "contentMediaType": "application/octet-stream",
+            "description": "Maximum file size: 2048 kilobytes."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "scheduled",
+              "published",
+              "archived"
+            ]
+          },
+          "is_premium": {
+            "type": "boolean"
+          },
+          "scheduled_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "category_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1
+          },
+          "tag_ids": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "integer"
+            }
+          }
+        },
+        "title": "UpdatePostRequest"
+      },
+      "UpdateTagRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 255
+          }
+        },
+        "title": "UpdateTagRequest"
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 255
+          },
+          "password": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 8
+          },
+          "password_confirmation": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 8
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          }
+        },
+        "title": "UpdateUserRequest"
+      },
+      "UserResource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "email_verified_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "email_verified_at",
+          "roles",
+          "created_at"
+        ],
+        "title": "UserResource"
+      }
+    },
+    "responses": {
+      "ValidationException": {
+        "description": "Validation error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Errors overview."
+                },
+                "errors": {
+                  "type": "object",
+                  "description": "A detailed description of each field that failed validation.",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "required": [
+                "message",
+                "errors"
+              ]
+            }
+          }
+        }
+      },
+      "AuthenticationException": {
+        "description": "Unauthenticated",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error overview."
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        }
+      },
+      "AuthorizationException": {
+        "description": "Authorization error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error overview."
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        }
+      },
+      "ModelNotFoundException": {
+        "description": "Not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Error overview."
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

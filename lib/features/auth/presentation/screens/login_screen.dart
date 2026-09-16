@@ -7,6 +7,7 @@ import 'package:mind_whispers_app/core/animations/animations.dart';
 import 'package:mind_whispers_app/core/helpers/app_validators.dart';
 import 'package:mind_whispers_app/core/helpers/extensions.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
+import 'package:mind_whispers_app/core/helpers/ui_helpers.dart';
 import 'package:mind_whispers_app/core/routes/routes.dart';
 import 'package:mind_whispers_app/core/widgets/app_button.dart';
 import 'package:mind_whispers_app/core/widgets/app_text_field.dart';
@@ -62,19 +63,28 @@ class _LoginScreenState extends State<LoginScreen> {
             } else if (state.isFailure) {
               setState(() => _shakeCount++);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message ?? 'errors.unexpected_error'.tr())),
+                SnackBar(
+                  content: Text(
+                    state.message ?? 'errors.unexpected_error'.tr(),
+                  ),
+                ),
               );
             }
           },
           child: SingleChildScrollView(
-            padding: EdgeInsetsDirectional.symmetric(horizontal: 24.w, vertical: 24.h),
+            padding: EdgeInsetsDirectional.symmetric(
+              horizontal: 24.w,
+              vertical: 24.h,
+            ),
             child: KeyedSubtree(
               key: ValueKey(_shakeCount),
               child: Form(
                 key: _formKey,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    AddlogoPng(),
+                    verticalSpace(16),
                     Text(
                       'auth.login.title'.tr(),
                       style: Theme.of(context).textTheme.displayMedium,
@@ -111,7 +121,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             Checkbox(
                               value: _remember,
-                              onChanged: (value) => setState(() => _remember = value ?? false),
+                              onChanged: (value) =>
+                                  setState(() => _remember = value ?? false),
                             ),
                             Text(
                               'auth.login.remember_me'.tr(),
@@ -123,11 +134,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         BlocBuilder<AuthCubit, AuthState>(
                           builder: (context, state) {
                             final isLoading =
-                                state.isLoading && state.action == AuthAction.login;
+                                state.isLoading &&
+                                state.action == AuthAction.login;
                             return AppButton(
                               label: 'auth.login.submit'.tr(),
                               isLoading: isLoading,
-                              onPressed: isLoading ? null : () => _submit(context),
+                              onPressed: isLoading
+                                  ? null
+                                  : () => _submit(context),
                             );
                           },
                         ),
@@ -140,7 +154,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: Theme.of(context).textTheme.bodyMedium,
                             ),
                             TextButton(
-                              onPressed: () => context.pushReplacementNamed(Routes.signUp),
+                              onPressed: () =>
+                                  context.pushReplacementNamed(Routes.signUp),
                               child: Text('auth.login.sign_up_link'.tr()),
                             ),
                           ],
@@ -149,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-              ).shake(),
+              ).fadeInSlideUp(),
             ),
           ),
         ),
