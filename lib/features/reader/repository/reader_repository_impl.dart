@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:mind_whispers_app/core/error_handling/error_mapper.dart';
 import 'package:mind_whispers_app/core/error_handling/failures.dart';
 import 'package:mind_whispers_app/features/reader/data/datasource/reader_remote_datasource.dart';
@@ -15,30 +14,30 @@ class ReaderRepositoryImpl implements ReaderRepository {
   ReaderRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<Either<Failure, List<Category>>> getCategories() async {
+  Future<Either<Failure, List<Category>>> getCategories({String? search}) async {
     try {
-      final models = await _remoteDataSource.getCategories();
+      final models = await _remoteDataSource.getCategories(search: search);
       return Right(models.map((model) => model.toEntity()).toList());
     } catch (e) {
-      return Left(_mapError(e));
+      return Left(ErrorMapper.map(e));
     }
   }
 
   @override
   Future<Either<Failure, Paginated<Post>>> getPosts({
-    int? categoryId,
     String? search,
+    String? categorySlug,
     int page = 1,
   }) async {
     try {
       final model = await _remoteDataSource.getPosts(
-        categoryId: categoryId,
         search: search,
+        categorySlug: categorySlug,
         page: page,
       );
       return Right(model.toEntity((postModel) => postModel.toEntity()));
     } catch (e) {
-      return Left(_mapError(e));
+      return Left(ErrorMapper.map(e));
     }
   }
 
@@ -48,62 +47,35 @@ class ReaderRepositoryImpl implements ReaderRepository {
       final model = await _remoteDataSource.getPost(id);
       return Right(model.toEntity());
     } catch (e) {
-      return Left(_mapError(e));
+      return Left(ErrorMapper.map(e));
     }
   }
 
   @override
-  Future<Either<Failure, Paginated<Comment>>> getComments(
-    int postId, {
-    int page = 1,
-  }) async {
+  Future<Either<Failure, List<Comment>>> getComments(int postId, {int page = 1}) async {
     try {
-      final model = await _remoteDataSource.getComments(postId, page: page);
-      return Right(model.toEntity((commentModel) => commentModel.toEntity()));
+      final models = await _remoteDataSource.getComments(postId, page: page);
+      return Right(models.map((model) => model.toEntity()).toList());
     } catch (e) {
-      return Left(_mapError(e));
+      return Left(ErrorMapper.map(e));
     }
   }
 
   @override
   Future<Either<Failure, Comment>> addComment({
     required int postId,
-    required String body,
-    required int authorId,
-    required String authorName,
-    String? authorAvatarUrl,
+    required String content,
+    int? parentId,
   }) async {
     try {
       final model = await _remoteDataSource.addComment(
         postId: postId,
-        body: body,
-        authorId: authorId,
-        authorName: authorName,
-        authorAvatarUrl: authorAvatarUrl,
+        content: content,
+        parentId: parentId,
       );
       return Right(model.toEntity());
     } catch (e) {
-      return Left(_mapError(e));
+      return Left(ErrorMapper.map(e));
     }
-  }
-
-  @override
-  Future<Either<Failure, Unit>> deleteComment(int id) async {
-    try {
-      await _remoteDataSource.deleteComment(id);
-      return const Right(unit);
-    } catch (e) {
-      return Left(_mapError(e));
-    }
-  }
-
-  /// [ErrorMapper] only understands Dio/IO exceptions; the fake datasource
-  /// signals a missing id with [ResourceNotFoundException] instead, so it's
-  /// translated to the same [NotFoundFailure] a real 404 would produce.
-  Failure _mapError(Object error) {
-    if (error is ResourceNotFoundException) {
-      return NotFoundFailure(message: 'errors.not_found'.tr());
-    }
-    return ErrorMapper.map(error);
   }
 }

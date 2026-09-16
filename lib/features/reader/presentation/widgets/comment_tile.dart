@@ -5,20 +5,33 @@ import 'package:mind_whispers_app/features/reader/domain/entities/comment.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/author_avatar.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/relative_date.dart';
 
+/// Renders one comment and, indented beneath it, its direct [Comment.replies]
+/// — the API only nests one level deep, so this never recurses further than
+/// that in practice. There's no delete-comment endpoint in api-1.json, so
+/// unlike the old fake-backed version of this tile there's no delete action.
 class CommentTile extends StatelessWidget {
   final Comment comment;
-  final bool canDelete;
-  final VoidCallback? onDelete;
 
-  const CommentTile({
-    super.key,
-    required this.comment,
-    this.canDelete = false,
-    this.onDelete,
-  });
+  const CommentTile({super.key, required this.comment});
 
   @override
   Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildRow(context, comment),
+        if (comment.replies.isNotEmpty)
+          Padding(
+            padding: EdgeInsetsDirectional.only(start: 36.w),
+            child: Column(
+              children: [for (final reply in comment.replies) CommentTile(comment: reply)],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildRow(BuildContext context, Comment comment) {
     final textTheme = Theme.of(context).textTheme;
 
     return Padding(
@@ -26,11 +39,7 @@ class CommentTile extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AuthorAvatar(
-            name: comment.author.name,
-            avatarUrl: comment.author.avatarUrl,
-            radius: 16.r,
-          ),
+          AuthorAvatar(name: comment.author.name, avatarUrl: comment.author.avatarUrl, radius: 16.r),
           horizontalSpace(10),
           Expanded(
             child: Column(
@@ -49,16 +58,10 @@ class CommentTile extends StatelessWidget {
                   ],
                 ),
                 verticalSpace(4),
-                Text(comment.body, style: textTheme.bodyMedium),
+                Text(comment.content, style: textTheme.bodyMedium),
               ],
             ),
           ),
-          if (canDelete)
-            IconButton(
-              icon: Icon(Icons.delete_outline_rounded, size: 18.sp),
-              onPressed: onDelete,
-              visualDensity: VisualDensity.compact,
-            ),
         ],
       ),
     );

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mind_whispers_app/core/const/app_assets.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
 import 'package:mind_whispers_app/core/injection/injection_container.dart';
 import 'package:mind_whispers_app/core/widgets/adaptive_scaffold.dart';
@@ -50,7 +51,7 @@ class _ReaderHomeViewState extends State<_ReaderHomeView> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SvgPicture.asset('assets/images/logo.svg', height: 30.h, excludeFromSemantics: true),
+            SvgPicture.asset(AppAssets.logoSvg, height: 30.h, excludeFromSemantics: true),
             horizontalSpace(8),
             Text('app_name'.tr(), style: textTheme.displaySmall),
           ],

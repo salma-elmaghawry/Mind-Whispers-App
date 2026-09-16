@@ -7,7 +7,7 @@ enum FeedAction { loadCategories, loadPosts }
 
 class FeedState extends BaseState {
   final List<Category> categories;
-  final int? selectedCategoryId;
+  final String? selectedCategorySlug;
   final String searchQuery;
   final List<Post> posts;
   final int currentPage;
@@ -20,7 +20,7 @@ class FeedState extends BaseState {
     super.status = Status.initial,
     super.message,
     this.categories = const [],
-    this.selectedCategoryId,
+    this.selectedCategorySlug,
     this.searchQuery = '',
     this.posts = const [],
     this.currentPage = 1,
@@ -39,7 +39,7 @@ class FeedState extends BaseState {
     Status? status,
     String? message,
     List<Category>? categories,
-    int? selectedCategoryId,
+    String? selectedCategorySlug,
     bool clearSelectedCategory = false,
     String? searchQuery,
     List<Post>? posts,
@@ -53,9 +53,9 @@ class FeedState extends BaseState {
       status: status ?? this.status,
       message: message,
       categories: categories ?? this.categories,
-      selectedCategoryId: clearSelectedCategory
+      selectedCategorySlug: clearSelectedCategory
           ? null
-          : (selectedCategoryId ?? this.selectedCategoryId),
+          : (selectedCategorySlug ?? this.selectedCategorySlug),
       searchQuery: searchQuery ?? this.searchQuery,
       posts: posts ?? this.posts,
       currentPage: currentPage ?? this.currentPage,
@@ -71,7 +71,7 @@ class FeedState extends BaseState {
     status,
     message,
     categories,
-    selectedCategoryId,
+    selectedCategorySlug,
     searchQuery,
     posts,
     currentPage,

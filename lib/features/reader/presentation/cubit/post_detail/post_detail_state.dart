@@ -3,7 +3,7 @@ import 'package:mind_whispers_app/core/error_handling/failures.dart';
 import 'package:mind_whispers_app/features/reader/domain/entities/comment.dart';
 import 'package:mind_whispers_app/features/reader/domain/entities/post.dart';
 
-enum PostDetailAction { loadPost, loadComments, addComment, deleteComment }
+enum PostDetailAction { loadPost, loadComments, addComment }
 
 class PostDetailState extends BaseState {
   final Post? post;
@@ -12,6 +12,14 @@ class PostDetailState extends BaseState {
   final bool hasMoreComments;
   final bool isLoadingMoreComments;
   final bool isSubmittingComment;
+
+  /// True when the most recent comments fetch (initial load or "load more")
+  /// failed. Kept separate from [BaseState.status]/[isFailure], which only
+  /// tracks the *post* fetch — without this, a failed `GET
+  /// /posts/{post}/comments` left [comments] empty with no signal that
+  /// anything went wrong, so the UI rendered the same "no comments yet"
+  /// empty state as a post that genuinely has none.
+  final bool commentsLoadFailed;
   final Failure? failure;
   final PostDetailAction? action;
 
@@ -24,6 +32,7 @@ class PostDetailState extends BaseState {
     this.hasMoreComments = false,
     this.isLoadingMoreComments = false,
     this.isSubmittingComment = false,
+    this.commentsLoadFailed = false,
     this.failure,
     this.action,
   });
@@ -37,6 +46,7 @@ class PostDetailState extends BaseState {
     bool? hasMoreComments,
     bool? isLoadingMoreComments,
     bool? isSubmittingComment,
+    bool? commentsLoadFailed,
     Failure? failure,
     PostDetailAction? action,
   }) {
@@ -49,6 +59,7 @@ class PostDetailState extends BaseState {
       hasMoreComments: hasMoreComments ?? this.hasMoreComments,
       isLoadingMoreComments: isLoadingMoreComments ?? this.isLoadingMoreComments,
       isSubmittingComment: isSubmittingComment ?? this.isSubmittingComment,
+      commentsLoadFailed: commentsLoadFailed ?? this.commentsLoadFailed,
       failure: failure,
       action: action ?? this.action,
     );
@@ -64,6 +75,7 @@ class PostDetailState extends BaseState {
     hasMoreComments,
     isLoadingMoreComments,
     isSubmittingComment,
+    commentsLoadFailed,
     failure,
     action,
   ];

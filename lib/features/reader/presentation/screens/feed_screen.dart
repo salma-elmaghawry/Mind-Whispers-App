@@ -16,8 +16,10 @@ import 'package:mind_whispers_app/features/reader/presentation/widgets/category_
 import 'package:mind_whispers_app/features/reader/presentation/widgets/post_card.dart';
 
 /// The Feed tab of [ReaderHomeScreen]: search, category filter, and an
-/// infinite-scroll list of published posts (see API_CONTRACT.md's
-/// `/posts` and `/categories`, served today by [ReaderFakeDataSource]).
+/// infinite-scroll list of published posts, from the live API's `GET
+/// /posts` and `GET /categories` (see api-1.json and
+/// [ReaderRemoteDataSource]'s doc comment on the real, paginated response
+/// shape).
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
 
@@ -86,8 +88,8 @@ class _FeedScreenState extends State<FeedScreen> {
                       verticalSpace(14),
                       CategoryChipsBar(
                         categories: state.categories,
-                        selectedCategoryId: state.selectedCategoryId,
-                        onSelected: (id) => context.read<FeedCubit>().selectCategory(id),
+                        selectedCategorySlug: state.selectedCategorySlug,
+                        onSelected: (slug) => context.read<FeedCubit>().selectCategory(slug),
                       ),
                       verticalSpace(16),
                     ],

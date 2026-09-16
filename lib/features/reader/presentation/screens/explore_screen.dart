@@ -28,10 +28,10 @@ class ExploreScreen extends StatefulWidget {
 
 class _ExploreScreenState extends State<ExploreScreen> {
   static const List<Category> _categories = [
-    Category(id: 1, name: 'Fiction', slug: 'fiction'),
-    Category(id: 2, name: 'Non-Fiction', slug: 'non-fiction'),
-    Category(id: 3, name: 'Self-Dev', slug: 'self-dev'),
-    Category(id: 4, name: 'Poetry', slug: 'poetry'),
+    Category(id: 1, name: 'Fiction', slug: 'fiction', color: '#A78BFA'),
+    Category(id: 2, name: 'Non-Fiction', slug: 'non-fiction', color: '#2E6F5B'),
+    Category(id: 3, name: 'Self-Dev', slug: 'self-dev', color: '#B5793A'),
+    Category(id: 4, name: 'Poetry', slug: 'poetry', color: '#E8547A'),
   ];
 
   static final List<_WriterSpotlight> _writers = [
@@ -66,7 +66,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       title: 'On writing slowly',
       excerpt: 'Why the best sentences are the ones you were willing to throw away twice.',
       coverImageUrl: 'https://picsum.photos/seed/on-writing-slowly/400/400',
-      categoryId: 2,
+      categorySlug: 'non-fiction',
       authorName: 'Maryam Eid',
       publishedAt: DateTime.now().subtract(const Duration(days: 2)),
     ),
@@ -74,7 +74,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       title: 'The lighthouse keeper\'s daughter',
       excerpt: 'She counted the ships the way other children counted sheep.',
       coverImageUrl: 'https://picsum.photos/seed/lighthouse-keeper/400/400',
-      categoryId: 1,
+      categorySlug: 'fiction',
       authorName: 'Layla Haddad',
       publishedAt: DateTime.now().subtract(const Duration(days: 5)),
     ),
@@ -82,7 +82,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       title: 'Five habits that quietly rebuilt my mornings',
       excerpt: 'None of them involve waking up at 5am, and that is the point.',
       coverImageUrl: 'https://picsum.photos/seed/morning-habits/400/400',
-      categoryId: 3,
+      categorySlug: 'self-dev',
       authorName: 'Omar Farouk',
       publishedAt: DateTime.now().subtract(const Duration(days: 1)),
     ),
@@ -90,7 +90,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       title: 'Instructions for leaving a small town',
       excerpt: 'A poem about the roads that only make sense once you\'re already gone.',
       coverImageUrl: 'https://picsum.photos/seed/leaving-small-town/400/400',
-      categoryId: 4,
+      categorySlug: 'poetry',
       authorName: 'Layla Haddad',
       publishedAt: DateTime.now().subtract(const Duration(days: 3)),
     ),
@@ -98,7 +98,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       title: 'What the archive would not tell us',
       excerpt: 'A year spent in a basement of city records, looking for one missing name.',
       coverImageUrl: 'https://picsum.photos/seed/the-archive/400/400',
-      categoryId: 2,
+      categorySlug: 'non-fiction',
       authorName: 'Yusuf Kanaan',
       publishedAt: DateTime.now().subtract(const Duration(days: 9)),
     ),
@@ -106,21 +106,21 @@ class _ExploreScreenState extends State<ExploreScreen> {
       title: 'The productivity system that finally survived a bad week',
       excerpt: 'Every system works when things are calm. Here is the one that held anyway.',
       coverImageUrl: 'https://picsum.photos/seed/productivity-system/400/400',
-      categoryId: 3,
+      categorySlug: 'self-dev',
       authorName: 'Omar Farouk',
       publishedAt: DateTime.now().subtract(const Duration(days: 6)),
     ),
   ];
 
-  int? _selectedCategoryId;
+  String? _selectedCategorySlug;
 
   List<_PostSpotlight> get _filteredSpotlights {
-    final categoryId = _selectedCategoryId;
-    if (categoryId == null) return _spotlights;
-    return _spotlights.where((post) => post.categoryId == categoryId).toList();
+    final categorySlug = _selectedCategorySlug;
+    if (categorySlug == null) return _spotlights;
+    return _spotlights.where((post) => post.categorySlug == categorySlug).toList();
   }
 
-  String _categoryName(int id) => _categories.firstWhere((c) => c.id == id).name;
+  String _categoryName(String slug) => _categories.firstWhere((c) => c.slug == slug).name;
 
   void _openComingSoon(_PostSpotlight post) {
     context.pushNamed(
@@ -147,8 +147,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
         verticalSpace(16),
         CategoryChipsBar(
           categories: _categories,
-          selectedCategoryId: _selectedCategoryId,
-          onSelected: (id) => setState(() => _selectedCategoryId = id),
+          selectedCategorySlug: _selectedCategorySlug,
+          onSelected: (slug) => setState(() => _selectedCategorySlug = slug),
         ),
         verticalSpace(24),
         Text('explore.writers_title'.tr(), style: textTheme.displaySmall),
@@ -183,7 +183,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
             padding: EdgeInsets.only(bottom: 14.h),
             child: _SpotlightCard(
               post: entry.value,
-              categoryName: _categoryName(entry.value.categoryId),
+              categoryName: _categoryName(entry.value.categorySlug),
               onTap: () => _openComingSoon(entry.value),
             ).fadeInSlideUp(delay: (40 * entry.key).ms),
           ),
@@ -210,7 +210,7 @@ class _PostSpotlight {
   final String title;
   final String excerpt;
   final String coverImageUrl;
-  final int categoryId;
+  final String categorySlug;
   final String authorName;
   final DateTime publishedAt;
 
@@ -218,7 +218,7 @@ class _PostSpotlight {
     required this.title,
     required this.excerpt,
     required this.coverImageUrl,
-    required this.categoryId,
+    required this.categorySlug,
     required this.authorName,
     required this.publishedAt,
   });

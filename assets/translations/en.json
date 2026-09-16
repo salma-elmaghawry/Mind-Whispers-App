@@ -118,9 +118,14 @@
         "tab_label": "Profile",
         "email_unverified": "Email not verified"
     },
+    "post": {
+        "premium_locked_title": "Premium content",
+        "premium_locked_message": "This post is available to Premium subscribers only."
+    },
     "comments": {
         "title": "Comments ({})",
         "empty_title": "No comments yet",
+        "load_error_title": "Couldn't load comments",
         "composer_label": "Comment",
         "composer_hint": "Write a comment...",
         "delete_title": "Delete comment?",

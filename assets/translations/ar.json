@@ -118,9 +118,14 @@
         "tab_label": "حسابي",
         "email_unverified": "البريد الإلكتروني غير مُفعّل"
     },
+    "post": {
+        "premium_locked_title": "محتوى مميز",
+        "premium_locked_message": "هذا المقال متاح فقط للمشتركين في الخطة المميزة."
+    },
     "comments": {
         "title": "التعليقات ({})",
         "empty_title": "لا توجد تعليقات بعد",
+        "load_error_title": "تعذّر تحميل التعليقات",
         "composer_label": "تعليق",
         "composer_hint": "اكتب تعليقاً...",
         "delete_title": "حذف التعليق؟",

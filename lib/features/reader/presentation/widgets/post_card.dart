@@ -62,21 +62,22 @@ class _PostCardState extends State<PostCard> {
                   borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
                 ),
               ),
-              Positioned(
-                top: 10.h,
-                left: 10.w,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.55),
-                    borderRadius: BorderRadius.circular(20.r),
-                  ),
-                  child: Text(
-                    post.category.name,
-                    style: textTheme.labelMedium?.copyWith(color: Colors.white),
+              if (post.primaryCategory != null)
+                Positioned(
+                  top: 10.h,
+                  left: 10.w,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.55),
+                      borderRadius: BorderRadius.circular(20.r),
+                    ),
+                    child: Text(
+                      post.primaryCategory!.name,
+                      style: textTheme.labelMedium?.copyWith(color: Colors.white),
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
           Padding(
