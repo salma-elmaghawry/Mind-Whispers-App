@@ -1,11 +1,6 @@
 import 'package:mind_whispers_app/features/reader/data/models/author_ref_model.dart';
 import 'package:mind_whispers_app/features/reader/domain/entities/comment.dart';
 
-/// Matches the `CommentResource` in api-1.json: `{ id, parent_id, content,
-/// author, replies, created_at }`. `replies` items reuse this same shape
-/// (see [fromJson]'s recursive mapping) but in practice only ever carry an
-/// empty `replies` list of their own — the API only supports one level of
-/// nesting under a top-level comment.
 class CommentModel {
   final int id;
   final int? parentId;

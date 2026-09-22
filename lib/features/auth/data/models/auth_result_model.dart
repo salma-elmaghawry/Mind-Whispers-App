@@ -1,9 +1,6 @@
 import 'package:mind_whispers_app/features/auth/data/models/user_model.dart';
 import 'package:mind_whispers_app/features/auth/domain/entities/auth_session.dart';
 
-/// Matches the register/login response body in api-1.json:
-/// `{ user: UserResource, token: string, expires_at: string }`
-/// (returned at the top level, not wrapped in a `data` envelope).
 class AuthResultModel {
   final UserModel user;
   final String token;

@@ -16,7 +16,6 @@ Widget centeredCupertinoLoader({Color? color, double size = 30}) {
   );
 }
 
-//add logo image
 Widget AddlogoPng() {
   return Image.asset(AppAssets.logoPng, width: 150, height: 150).fadeInScale();
 }

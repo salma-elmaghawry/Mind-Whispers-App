@@ -13,6 +13,7 @@ import 'package:mind_whispers_app/core/widgets/app_button.dart';
 import 'package:mind_whispers_app/core/widgets/app_text_field.dart';
 import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_state.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -87,12 +88,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     verticalSpace(16),
                     Text(
                       'auth.login.title'.tr(),
-                      style: Theme.of(context).textTheme.displayMedium,
+                      style: AppTextStyles.font24Bold,
                     ).fadeInSlideUp(),
                     verticalSpace(8),
                     Text(
                       'auth.login.subtitle'.tr(),
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: AppTextStyles.font16Normal,
                     ).fadeInSlideUp(delay: 60.ms),
                     verticalSpace(32),
                     ...AnimationBuilder.staggerColumn(
@@ -124,9 +125,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               onChanged: (value) =>
                                   setState(() => _remember = value ?? false),
                             ),
-                            Text(
-                              'auth.login.remember_me'.tr(),
-                              style: Theme.of(context).textTheme.bodyMedium,
+                            Expanded(
+                              child: Text(
+                                'auth.login.remember_me'.tr(),
+                                style: AppTextStyles.font14Normal.secondary(context),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  context.pushNamed(Routes.forgotPassword),
+                              child: Text('auth.login.forgot_password'.tr(),
+                                  style: AppTextStyles.font14Normal.copyWith(
+                                        color: Theme.of(context).primaryColor,
+                                      )),
                             ),
                           ],
                         ),
@@ -151,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             Text(
                               'auth.login.no_account'.tr(),
-                              style: Theme.of(context).textTheme.bodyMedium,
+                              style: AppTextStyles.font16Normal,
                             ),
                             TextButton(
                               onPressed: () =>

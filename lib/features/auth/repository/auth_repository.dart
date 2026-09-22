@@ -19,11 +19,16 @@ abstract class AuthRepository {
 
   Future<Either<Failure, Unit>> logout();
 
-  /// Confirms the locally persisted token is still valid and returns the
-  /// current user, refreshing the persisted role as a side effect.
   Future<Either<Failure, User>> me();
 
-  /// Synchronous, local-only check used by [AuthCubit.checkAuthStatus] to
-  /// decide whether it's even worth calling [me].
+  Future<Either<Failure, Unit>> forgotPassword({required String email});
+
+  Future<Either<Failure, Unit>> resetPassword({
+    required String email,
+    required String otp,
+    required String password,
+    required String passwordConfirmation,
+  });
+
   bool get hasPersistedToken;
 }

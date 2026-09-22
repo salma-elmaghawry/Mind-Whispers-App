@@ -7,11 +7,6 @@ class AdaptiveDestination {
   final IconData? selectedIcon;
   final String label;
 
-  /// Overrides the default `Icon(icon)`/`Icon(selectedIcon)` rendering with
-  /// a custom widget — e.g. a filled circular badge for a "compose" tab
-  /// that should stand out from the rest of the bar. [icon]/[selectedIcon]
-  /// are still required as the rail's fallback and for tooling that reads
-  /// destinations by [IconData].
   final Widget? iconWidget;
   final Widget? selectedIconWidget;
 
@@ -24,10 +19,6 @@ class AdaptiveDestination {
   });
 }
 
-/// Bottom navigation on phones, a side [NavigationRail] on wide screens —
-/// same destinations and pages, different chrome. Reader/Author tabs use
-/// the narrow layout; the Admin web dashboard (Day 9) is where the rail
-/// actually earns its keep.
 class AdaptiveScaffold extends StatelessWidget {
   static const double wideBreakpoint = 600;
 
@@ -107,14 +98,6 @@ class AdaptiveScaffold extends StatelessWidget {
   }
 }
 
-/// A floating, icon-over-label bottom bar — the "modern" replacement for a
-/// stock Material [NavigationBar]. Every destination always shows its icon
-/// with the tab's name underneath (rather than only revealing the label on
-/// selection); the destination whose [AdaptiveDestination] supplies a
-/// custom icon widget (e.g. the reader's raised "compose" circle) renders
-/// that badge larger and lifted slightly above the bar instead of the
-/// plain icon the other tabs use, though it still carries a label like the
-/// rest of the bar.
 class _FloatingNavBar extends StatelessWidget {
   final List<AdaptiveDestination> destinations;
   final int selectedIndex;
@@ -181,10 +164,6 @@ class _FloatingNavItem extends StatelessWidget {
 
   const _FloatingNavItem({required this.destination, required this.selected, required this.onTap});
 
-  /// A destination with its own icon widget (the compose "+" circle) reads
-  /// as an action, not a place — it gets a larger, lifted badge instead of
-  /// the plain icon the other tabs use, though it still carries a label
-  /// like the rest of the bar.
   bool get _isCustomBadge => destination.iconWidget != null;
 
   @override
@@ -247,10 +226,8 @@ class _FloatingNavItem extends StatelessWidget {
                 maxLines: 1,
                 softWrap: false,
                 overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.font10Normal.copyWith(
-                  color: color,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                ),
+                style: (selected ? AppTextStyles.font10Bold : AppTextStyles.font10Medium)
+                    .copyWith(color: color),
               ),
             ],
           ),

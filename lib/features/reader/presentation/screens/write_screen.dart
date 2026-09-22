@@ -6,6 +6,7 @@ import 'package:mind_whispers_app/core/theme/app_colors.dart';
 import 'package:mind_whispers_app/core/widgets/app_card.dart';
 import 'package:mind_whispers_app/core/widgets/empty_state_view.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/post_cover_image.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
 enum _WriteStatus { draft, published }
 
@@ -17,12 +18,6 @@ class _WriteItem {
   const _WriteItem({required this.title, required this.status, required this.date});
 }
 
-/// The Write tab of [ReaderHomeScreen]: a reader's own drafts and published
-/// posts. There's no "my posts" endpoint yet — see `AuthorHomeScreen`'s own
-/// placeholder note, this covers the same ground for the reader-facing "+"
-/// tab — so this list is static sample data, not wired to any repository.
-/// Composing a new post isn't built either; the FAB says so instead of
-/// silently doing nothing.
 class WriteScreen extends StatefulWidget {
   const WriteScreen({super.key});
 
@@ -71,9 +66,6 @@ class _WriteScreenState extends State<WriteScreen> {
   Widget build(BuildContext context) {
     final filtered = _items.where((item) => item.status == _selected).toList();
 
-    // No AppBar here — this is a tab inside [ReaderHomeScreen]'s
-    // AdaptiveScaffold, which already renders the shared "Mind Whispers" bar. A
-    // second AppBar would stack a redundant header under it.
     return Scaffold(
       body: Column(
         children: [
@@ -82,7 +74,7 @@ class _WriteScreenState extends State<WriteScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('write.title'.tr(), style: Theme.of(context).textTheme.displaySmall),
+                Text('write.title'.tr(), style: AppTextStyles.font20Bold),
                 verticalSpace(14),
                 _SegmentedTabs(
                   selected: _selected,
@@ -162,7 +154,6 @@ class _SegmentedTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return Expanded(
       child: GestureDetector(
@@ -186,7 +177,7 @@ class _SegmentedTab extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: textTheme.labelLarge?.copyWith(
+            style: AppTextStyles.font14Medium.copyWith(
               color: selected ? colorScheme.onSurface : colorScheme.onSurface.withValues(alpha: 0.55),
             ),
           ),
@@ -204,7 +195,6 @@ class _WriteTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final isDraft = item.status == _WriteStatus.draft;
     final statusColor = isDraft ? AppColors.warning : colorScheme.secondary;
     final statusLabel = isDraft ? 'write.draft_status'.tr() : 'write.published_status'.tr();
@@ -231,12 +221,12 @@ class _WriteTile extends StatelessWidget {
                   item.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                  style: AppTextStyles.font16SemiBold,
                 ),
                 verticalSpace(4),
                 Text(
                   '$statusLabel · ${DateFormat.yMMMd().format(item.date)}',
-                  style: textTheme.labelMedium?.copyWith(color: statusColor),
+                  style: AppTextStyles.font12Medium.copyWith(color: statusColor),
                 ),
               ],
             ),

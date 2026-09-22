@@ -84,10 +84,10 @@ class AppTheme {
         bodySmall: AppTextStyles.font14Normal.copyWith(
           color: AppColors.textSecondaryLight,
         ),
-        labelLarge: AppTextStyles.font14SemiBold.copyWith(
+        labelLarge: AppTextStyles.font14Medium.copyWith(
           color: AppColors.textPrimaryLight,
         ),
-        labelMedium: AppTextStyles.font12SemiBold.copyWith(
+        labelMedium: AppTextStyles.font12Medium.copyWith(
           color: AppColors.textSecondaryLight,
         ),
       ),
@@ -195,10 +195,10 @@ class AppTheme {
         bodySmall: AppTextStyles.font14Normal.copyWith(
           color: AppColors.textSecondaryDark,
         ),
-        labelLarge: AppTextStyles.font14SemiBold.copyWith(
+        labelLarge: AppTextStyles.font14Medium.copyWith(
           color: AppColors.textPrimaryDark,
         ),
-        labelMedium: AppTextStyles.font12SemiBold.copyWith(
+        labelMedium: AppTextStyles.font12Medium.copyWith(
           color: AppColors.textSecondaryDark,
         ),
       ),

@@ -1,11 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-/// Parses API-supplied hex color strings (e.g. a `CategoryResource.color`
-/// like `#A78BFA`) into a [Color].
 extension HexColor on String {
-  /// Accepts `#RRGGBB` or `#AARRGGBB` (leading `#` optional). Falls back to
-  /// [fallback] for anything else, so a malformed/missing color from the
-  /// API never crashes the UI.
   Color toColor({Color fallback = const Color(0xFFA78BFA)}) {
     var hex = replaceFirst('#', '');
     if (hex.length == 6) hex = 'FF$hex';

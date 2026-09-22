@@ -7,7 +7,6 @@ import 'package:mind_whispers_app/core/bloc/base_bloc.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
 import 'package:mind_whispers_app/core/widgets/empty_state_view.dart';
 import 'package:mind_whispers_app/core/widgets/error_state_view.dart';
-import 'package:mind_whispers_app/features/reader/domain/entities/post.dart';
 import 'package:mind_whispers_app/features/reader/presentation/cubit/post_detail/post_detail_cubit.dart';
 import 'package:mind_whispers_app/features/reader/presentation/cubit/post_detail/post_detail_state.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/author_avatar.dart';
@@ -16,11 +15,8 @@ import 'package:mind_whispers_app/features/reader/presentation/widgets/comment_t
 import 'package:mind_whispers_app/features/reader/presentation/widgets/post_cover_image.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/relative_date.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/rich_html_text.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// A single post: cover, body, and its comment thread. `postId` comes from
-/// the route arguments (see AppRouter) — [PostDetailCubit] fetches the post
-/// and its comments fresh from `GET /posts/{post}` and
-/// `GET /posts/{post}/comments` (see api-1.json).
 class PostDetailScreen extends StatefulWidget {
   final int postId;
 
@@ -54,9 +50,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     super.dispose();
   }
 
-  /// The comment is posted as whoever is signed in (the server reads the
-  /// author off the Bearer token) — every route into this screen is
-  /// already behind sign-in, so there's no signed-out case to guard here.
   void _handleAddComment(String content) {
     context.read<PostDetailCubit>().addComment(content: content);
   }
@@ -115,7 +108,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                           if (post.primaryCategory != null)
                             _CategoryChip(name: post.primaryCategory!.name),
                           verticalSpace(12),
-                          Text(post.title, style: Theme.of(context).textTheme.displayMedium),
+                          Text(post.title, style: AppTextStyles.font24Bold),
                           verticalSpace(14),
                           Row(
                             children: [
@@ -128,7 +121,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                               Expanded(
                                 child: Text(
                                   '${post.author.name} · ${formatRelativeDate(post.publishedAt ?? post.createdAt)}',
-                                  style: Theme.of(context).textTheme.labelMedium,
+                                  style: AppTextStyles.font12Medium.secondary(context),
                                 ),
                               ),
                             ],
@@ -143,7 +136,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                           verticalSpace(14),
                           Text(
                             'comments.title'.tr(args: ['${post.commentsCount}']),
-                            style: Theme.of(context).textTheme.displaySmall,
+                            style: AppTextStyles.font20Bold,
                           ),
                           verticalSpace(8),
                           if (state.comments.isEmpty && !state.isLoadingMoreComments)
@@ -225,23 +218,18 @@ class _CategoryChip extends StatelessWidget {
       ),
       child: Text(
         name,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colorScheme.primary),
+        style: AppTextStyles.font12Medium.copyWith(color: colorScheme.primary),
       ),
     );
   }
 }
 
-/// Shown instead of the body for a premium [Post] the current caller can't
-/// read yet (see [Post.isLocked]) — the API sends `content: null` rather
-/// than a 403 for this case, so the app renders a lock state instead of an
-/// error.
 class _PremiumLockedNotice extends StatelessWidget {
   const _PremiumLockedNotice();
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return Container(
       width: double.infinity,
@@ -256,9 +244,9 @@ class _PremiumLockedNotice extends StatelessWidget {
         children: [
           Icon(Icons.lock_outline_rounded, color: colorScheme.secondary),
           verticalSpace(10),
-          Text('post.premium_locked_title'.tr(), style: textTheme.displaySmall),
+          Text('post.premium_locked_title'.tr(), style: AppTextStyles.font20Bold),
           verticalSpace(6),
-          Text('post.premium_locked_message'.tr(), style: textTheme.bodyMedium),
+          Text('post.premium_locked_message'.tr(), style: AppTextStyles.font16Normal),
         ],
       ),
     );

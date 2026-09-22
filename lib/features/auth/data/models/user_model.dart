@@ -1,7 +1,5 @@
 import 'package:mind_whispers_app/features/auth/domain/entities/user.dart';
 
-/// Matches `UserResource` in api-1.json:
-/// `{ id, name, email, email_verified_at, roles: string[], created_at }`.
 class UserModel {
   final int id;
   final String name;

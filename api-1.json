@@ -3,7 +3,7 @@
   "info": {
     "title": "Mind Whispers Mobile API",
     "version": "0.1.0",
-    "description": "Mobile API for Mind Whispers. Send `Accept: application/json` on every request.\n\n## Authentication\n\n1. Call **Register** or **Login** with a stable `device_name` (for example the phone model or a generated UUID for that install).\n2. Persist `token` and send `Authorization: Bearer {token}` on later requests (including **Me**).\n3. After **Register**, a verification email is sent. `email_verified_at` stays `null` until the user opens the link (the same website verification link as web signup).\n4. On **Login**, send `remember: true` to keep the session for 30 days. Without it, the token expires after 24 hours. Use `expires_at` to know when to ask the user to sign in again.\n5. On **Logout**, send the Bearer token and the same `device_name` to revoke that device's session.\n\n## Roles\n\nSame permissions as the website. `GET /auth/me` returns `roles`. Staff (`create-post`) can read premium content without a subscription.\n\n- **Guest** — `GET /posts`, `GET /posts/{id}` (published only), `GET /categories`, `GET /tags`. Premium `content` is `null`.\n- **Registered user** — no post permissions. Same as guest. Premium `content` only with an active Premium subscription (`hasPremiumAccess`). Register does not assign a role.\n- **Author** — `create-post`, `edit-post`, `delete-post`, `publish-post`. Create/publish/unpublish **own** posts. `GET /posts/manage` is own posts only. Cannot edit someone else's post.\n- **Editor** — `create-post`, `edit-any-post`, `delete-any-post`, `publish-post`. `GET /posts/manage` is **all** authors and statuses; can edit/publish/unpublish any post.\n- **Admin** — all permissions, including `manage-users`, `manage-roles`, `manage-newsletters`, `manage-subscriptions`. For posts, same as editor.\n\n`publish-post` is required to set status to `scheduled`, `published`, or `archived`. `status: draft` unpublishes.\n\n## Posts\n\n- `GET /posts` is the public published feed (web `/blog`).\n- `GET /posts/manage` is the staff list (web `/posts`): authors see only their posts; editors/admins see all.\n- `GET /posts/{id}` is public detail. Premium `content` is `null` unless the user has premium access.\n- `GET /posts/{id}/comments` is public for readable published posts (premium needs access). Paginated. `POST /posts/{id}/comments` requires login, same as the website.\n- `POST /posts` and `PATCH /posts/{id}` follow the permissions above.\n\n## Categories\n\nSame as the website `/categories` screens.\n\n- `GET /categories` is public (for post filters). Search with `q`. `posts_count` is published posts only.\n- `POST /categories`, `PATCH /categories/{id}`, `DELETE /categories/{id}` — `manage-roles` (admin). Delete detaches the category from posts first.\n\n## Tags\n\nSame pattern as categories. Website `/tags` screens for write.\n\n- `GET /tags` is public (for post filters). Search with `q` on name. `posts_count` is published posts only.\n- `POST /tags`, `PATCH /tags/{id}`, `DELETE /tags/{id}` — `manage-roles` (admin). Delete detaches the tag from posts first.\n\n## Users\n\nSame as the website `/users` screens. Requires `manage-users` (admin).\n\n- `GET /users` — list, `q` (name/email), `role` (`all` or a role name).\n- `POST /users`, `GET /users/{id}`, `PATCH /users/{id}`, `DELETE /users/{id}`. Cannot delete yourself. Password requires `password_confirmation` (optional on PATCH unless `password` is sent).\n- `GET /roles` — role names for the filter and create/edit checkboxes."
+    "description": "Mobile API for Mind Whispers. Send `Accept: application/json` on every request.\n\n## Authentication\n\n1. Call **Register** or **Login** with a stable `device_name` (for example the phone model or a generated UUID for that install).\n2. Persist `token` and send `Authorization: Bearer {token}` on later requests (including **Me**).\n3. After **Register**, a verification email is sent. `email_verified_at` stays `null` until the user opens the link (the same website verification link as web signup).\n4. On **Login**, send `remember: true` to keep the session for 30 days. Without it, the token expires after 24 hours. Use `expires_at` to know when to ask the user to sign in again.\n5. On **Logout**, send the Bearer token and the same `device_name` to revoke that device's session.\n6. **Forgot password** — `POST /auth/forgot-password` with `email`. Emails a 6-digit OTP (10 minutes). **Reset password** — `POST /auth/reset-password` with `email`, `otp`, `password`, and `password_confirmation`. Then call **Login**.\n\n## Roles\n\nSame permissions as the website. `GET /auth/me` returns `roles`. Staff (`create-post`) can read premium content without a subscription.\n\n- **Guest** — `GET /posts`, `GET /posts/{id}` (published only), `GET /categories`, `GET /tags`. Premium `content` is `null`.\n- **Registered user** — no post permissions. Same as guest. Premium `content` only with an active Premium subscription (`hasPremiumAccess`). Register does not assign a role.\n- **Author** — `create-post`, `edit-post`, `delete-post`, `publish-post`. Create/publish/unpublish **own** posts. `GET /posts/manage` is own posts only. Cannot edit someone else's post.\n- **Editor** — `create-post`, `edit-any-post`, `delete-any-post`, `publish-post`. `GET /posts/manage` is **all** authors and statuses; can edit/publish/unpublish any post.\n- **Admin** — all permissions, including `manage-users`, `manage-roles`, `manage-newsletters`, `manage-subscriptions`. For posts, same as editor.\n\n`publish-post` is required to set status to `scheduled`, `published`, or `archived`. `status: draft` unpublishes.\n\n## Posts\n\n- `GET /posts` is the public published feed (web `/blog`).\n- `GET /posts/manage` is the staff list (web `/posts`): authors see only their posts; editors/admins see all.\n- `GET /posts/{id}` is public detail. Premium `content` is `null` unless the user has premium access.\n- `GET /posts/{id}/comments` is public for readable published posts (premium needs access). Paginated. `POST /posts/{id}/comments` requires login, same as the website.\n- `POST /posts` and `PATCH /posts/{id}` follow the permissions above.\n\n## Categories\n\nSame as the website `/categories` screens.\n\n- `GET /categories` is public (for post filters). Search with `q`. `posts_count` is published posts only.\n- `POST /categories`, `PATCH /categories/{id}`, `DELETE /categories/{id}` — `manage-roles` (admin). Delete detaches the category from posts first.\n\n## Tags\n\nSame pattern as categories. Website `/tags` screens for write.\n\n- `GET /tags` is public (for post filters). Search with `q` on name. `posts_count` is published posts only.\n- `POST /tags`, `PATCH /tags/{id}`, `DELETE /tags/{id}` — `manage-roles` (admin). Delete detaches the tag from posts first.\n\n## Users\n\nSame as the website `/users` screens. Requires `manage-users` (admin).\n\n- `GET /users` — list, `q` (name/email), `role` (`all` or a role name).\n- `POST /users`, `GET /users/{id}`, `PATCH /users/{id}`, `DELETE /users/{id}`. Cannot delete yourself. Password requires `password_confirmation` (optional on PATCH unless `password` is sent).\n- `GET /roles` — role names for the filter and create/edit checkboxes."
   },
   "servers": [
     {
@@ -128,6 +128,94 @@
                     "user",
                     "token",
                     "expires_at"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        },
+        "security": []
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "operationId": "auth.forgot-password",
+        "description": "Email a 6-digit OTP (valid 10 minutes). Send `email`. Unknown emails and resend throttling return 422 on `email`, same idea as the website broker.",
+        "summary": "Forgot password",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationException"
+          }
+        },
+        "security": []
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "operationId": "auth.reset-password",
+        "description": "Send `email`, the 6-digit `otp` from the email, `password`, and `password_confirmation`. After success, sign in with Login. Password rules match registration (`Password::default()`).",
+        "summary": "Reset password",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
                   ]
                 }
               }
@@ -1505,6 +1593,19 @@
         ],
         "title": "CommentResource"
       },
+      "ForgotPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "title": "ForgotPasswordRequest"
+      },
       "LoginRequest": {
         "type": "object",
         "properties": {
@@ -1672,6 +1773,31 @@
           "device_name"
         ],
         "title": "RegisterRequest"
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "otp": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          },
+          "password_confirmation": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "otp",
+          "email",
+          "password",
+          "password_confirmation"
+        ],
+        "title": "ResetPasswordRequest"
       },
       "RoleResource": {
         "type": "object",

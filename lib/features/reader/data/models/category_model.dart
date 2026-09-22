@@ -18,7 +18,7 @@ class CategoryModel {
       id: json['id'] as int,
       name: json['name'] as String,
       slug: json['slug'] as String,
-   
+
       color: json['color'] as String? ?? '#A78BFA',
     );
   }

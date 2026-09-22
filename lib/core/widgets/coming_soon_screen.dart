@@ -6,13 +6,8 @@ import 'package:mind_whispers_app/core/animations/animations.dart';
 import 'package:mind_whispers_app/core/helpers/extensions.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
 import 'package:mind_whispers_app/core/widgets/app_button.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// Arguments for `Routes.comingSoon` — pass as `settings.arguments`. Any
-/// screen that links to a feature that isn't built yet (a post's full page
-/// from Explore, composing a new post from Write, ...) routes here instead
-/// of a bare `SnackBar`, so the "not built yet" moment reads as a real
-/// screen — with its own back button — rather than a toast that's easy to
-/// miss and leaves the tap looking like it did nothing.
 class ComingSoonArgs {
   final String title;
   final String message;
@@ -25,8 +20,6 @@ class ComingSoonArgs {
   });
 }
 
-/// Generic "not built yet" destination for any tap that would otherwise
-/// dead-end — see [ComingSoonArgs].
 class ComingSoonScreen extends StatelessWidget {
   final ComingSoonArgs args;
 
@@ -35,7 +28,6 @@ class ComingSoonScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: AppBar(title: Text(args.title, maxLines: 1, overflow: TextOverflow.ellipsis)),
@@ -58,13 +50,13 @@ class ComingSoonScreen extends StatelessWidget {
               verticalSpace(20),
               Text(
                 'common.coming_soon_title'.tr(),
-                style: textTheme.displaySmall,
+                style: AppTextStyles.font20Bold,
                 textAlign: TextAlign.center,
               ).fadeInSlideUp(delay: 80.ms),
               verticalSpace(8),
               Text(
                 args.message,
-                style: textTheme.bodySmall,
+                style: AppTextStyles.font14Normal.secondary(context),
                 textAlign: TextAlign.center,
               ).fadeInSlideUp(delay: 120.ms),
               verticalSpace(28),

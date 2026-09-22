@@ -15,11 +15,6 @@ import 'package:mind_whispers_app/features/reader/presentation/cubit/feed/feed_s
 import 'package:mind_whispers_app/features/reader/presentation/widgets/category_chips_bar.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/post_card.dart';
 
-/// The Feed tab of [ReaderHomeScreen]: search, category filter, and an
-/// infinite-scroll list of published posts, from the live API's `GET
-/// /posts` and `GET /categories` (see api-1.json and
-/// [ReaderRemoteDataSource]'s doc comment on the real, paginated response
-/// shape).
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
 
@@ -60,7 +55,7 @@ class _FeedScreenState extends State<FeedScreen> {
         if (state.isInitialLoad) {
           return _buildSkeleton();
         }
-        if (state.isFailure && state.posts.isEmpty && state.categories.isEmpty) {
+        if (state.isFailure && state.posts.isEmpty) {
           return ErrorStateView(
             message: state.message ?? 'errors.unexpected_error'.tr(),
             onRetry: () => context.read<FeedCubit>().loadInitial(),

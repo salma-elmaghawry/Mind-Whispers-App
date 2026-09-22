@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// A post's cover image with a graceful fallback for `null`/failed loads —
-/// shared by [PostCard] and `PostDetailScreen` so both degrade the same way.
 class PostCoverImage extends StatelessWidget {
   final String? url;
   final BorderRadius? borderRadius;

@@ -13,11 +13,8 @@ import 'package:mind_whispers_app/features/reader/presentation/screens/feed_scre
 import 'package:mind_whispers_app/features/reader/presentation/screens/notifications_screen.dart';
 import 'package:mind_whispers_app/features/reader/presentation/screens/profile_screen.dart';
 import 'package:mind_whispers_app/features/reader/presentation/screens/write_screen.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// The reader experience: Home (feed, search, category filters), Explore,
-/// Write (drafts/published), Notifications, and Profile. Post detail and
-/// its comment thread are a separate pushed route (see [PostDetailScreen]
-/// / `Routes.postDetail`), not a tab.
 class ReaderHomeScreen extends StatelessWidget {
   const ReaderHomeScreen({super.key});
 
@@ -43,7 +40,6 @@ class _ReaderHomeViewState extends State<_ReaderHomeView> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return AdaptiveScaffold(
       appBar: AppBar(
@@ -53,7 +49,7 @@ class _ReaderHomeViewState extends State<_ReaderHomeView> {
           children: [
             SvgPicture.asset(AppAssets.logoSvg, height: 30.h, excludeFromSemantics: true),
             horizontalSpace(8),
-            Text('app_name'.tr(), style: textTheme.displaySmall),
+            Text('app_name'.tr(), style: AppTextStyles.font20Bold),
           ],
         ),
       ),
@@ -98,8 +94,6 @@ class _ReaderHomeViewState extends State<_ReaderHomeView> {
   }
 }
 
-/// The raised purple "+" badge for the Write tab — the one destination in
-/// the bar meant to read as an action ("compose") rather than a place.
 class _ComposeBadge extends StatelessWidget {
   final Color color;
 

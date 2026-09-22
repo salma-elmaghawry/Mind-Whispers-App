@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// A network avatar with a graceful initials fallback — used for post
-/// authors and commenters, neither of which are guaranteed an `avatar_url`.
 class AuthorAvatar extends StatelessWidget {
   final String name;
   final String? avatarUrl;
@@ -50,11 +49,7 @@ class AuthorAvatar extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         _initials(name),
-        style: TextStyle(
-          fontSize: size * 0.38,
-          color: colorScheme.primary,
-          fontWeight: FontWeight.w600,
-        ),
+        style: AppTextStyles.semiBoldOf(size * 0.38).copyWith(color: colorScheme.primary),
       ),
     );
   }

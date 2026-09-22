@@ -16,13 +16,8 @@ import 'package:mind_whispers_app/core/widgets/app_card.dart';
 import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// Shared shell for the three role homes until each gets its real screens
-/// (Reader: Day 4-6, Author: Day 7-8, Admin: Day 9-11). Runs the Home/
-/// Settings split through [AdaptiveScaffold] now so the same bottom-nav
-/// (mobile) / nav-rail (wide/admin) chrome those days need is already
-/// proven end to end, alongside persisted theme, localization/RTL, role
-/// guards, and the animation kit.
 class RoleHomePlaceholder extends StatefulWidget {
   final AppRole role;
   final Color accentColor;
@@ -95,13 +90,13 @@ class _HomeTab extends StatelessWidget {
             Text(
               'home.welcome_title'.tr(args: [roleLabel]),
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.displaySmall,
+              style: AppTextStyles.font20Bold,
             ).fadeInSlideUp(delay: 80.ms),
             verticalSpace(10),
             Text(
               'home.welcome_subtitle'.tr(),
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: AppTextStyles.font16Normal,
             ).fadeInSlideUp(delay: 140.ms),
           ],
         ),
@@ -141,7 +136,7 @@ class _SettingsTab extends StatelessWidget {
             children: [
               Text(
                 'preferences.theme'.tr(),
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: AppTextStyles.font16Normal,
               ),
               IconButton(
                 tooltip: 'preferences.theme'.tr(),
@@ -158,7 +153,7 @@ class _SettingsTab extends StatelessWidget {
             children: [
               Text(
                 'preferences.language'.tr(),
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: AppTextStyles.font16Normal,
               ),
               IconButton(
                 tooltip: 'preferences.language'.tr(),

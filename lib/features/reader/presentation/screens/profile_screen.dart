@@ -15,10 +15,8 @@ import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_cubit.da
 import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_state.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/author_avatar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// The Profile tab of [ReaderHomeScreen] — the signed-in user's identity
-/// (from `/auth/me`, via [AuthCubit]) plus the same theme/language/sign-out
-/// controls every role home offers (see [RoleHomePlaceholder]'s Settings tab).
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -39,7 +37,6 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthCubit>().state.user;
-    final textTheme = Theme.of(context).textTheme;
 
     return ListView(
       padding: EdgeInsets.all(20.w),
@@ -51,12 +48,12 @@ class ProfileScreen extends StatelessWidget {
               verticalSpace(14),
               Text(
                 user?.name ?? '',
-                style: textTheme.displaySmall,
+                style: AppTextStyles.font20Bold,
               ).fadeInSlideUp(delay: 60.ms),
               verticalSpace(4),
               Text(
                 user?.email ?? '',
-                style: textTheme.bodySmall,
+                style: AppTextStyles.font14Normal.secondary(context),
               ).fadeInSlideUp(delay: 100.ms),
               if (user != null && !user.isEmailVerified) ...[
                 verticalSpace(10),
@@ -68,7 +65,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   child: Text(
                     'profile.email_unverified'.tr(),
-                    style: textTheme.labelMedium?.copyWith(
+                    style: AppTextStyles.font12Medium.copyWith(
                       color: Theme.of(context).colorScheme.error,
                     ),
                   ),
@@ -82,7 +79,7 @@ class ProfileScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('preferences.theme'.tr(), style: textTheme.bodyMedium),
+              Text('preferences.theme'.tr(), style: AppTextStyles.font16Normal),
               IconButton(
                 tooltip: 'preferences.theme'.tr(),
                 icon: const Icon(Icons.brightness_6_outlined),
@@ -96,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('preferences.language'.tr(), style: textTheme.bodyMedium),
+              Text('preferences.language'.tr(), style: AppTextStyles.font16Normal),
               IconButton(
                 tooltip: 'preferences.language'.tr(),
                 icon: const Icon(Icons.translate_outlined),

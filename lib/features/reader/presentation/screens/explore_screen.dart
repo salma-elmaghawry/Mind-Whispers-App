@@ -13,12 +13,8 @@ import 'package:mind_whispers_app/features/reader/presentation/widgets/author_av
 import 'package:mind_whispers_app/features/reader/presentation/widgets/category_chips_bar.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/post_cover_image.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/relative_date.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// The Explore tab of [ReaderHomeScreen]: curated category chips, a
-/// "writers to follow" shelf, and a recommended-reads shelf. There's no
-/// `/explore` endpoint yet (see API_CONTRACT.md), so every shelf here is
-/// static sample data, not wired to `ReaderRepository` — the same
-/// placeholder approach `WriteScreen` takes for "my posts".
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
 
@@ -135,15 +131,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final spotlights = _filteredSpotlights;
 
     return ListView(
       padding: EdgeInsetsDirectional.fromSTEB(16.w, 16.h, 16.w, 24.h),
       children: [
-        Text('explore.title'.tr(), style: textTheme.displaySmall).fadeInSlideUp(),
+        Text('explore.title'.tr(), style: AppTextStyles.font20Bold).fadeInSlideUp(),
         verticalSpace(4),
-        Text('explore.subtitle'.tr(), style: textTheme.bodySmall).fadeInSlideUp(delay: 40.ms),
+        Text('explore.subtitle'.tr(), style: AppTextStyles.font14Normal.secondary(context)).fadeInSlideUp(delay: 40.ms),
         verticalSpace(16),
         CategoryChipsBar(
           categories: _categories,
@@ -151,13 +146,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
           onSelected: (slug) => setState(() => _selectedCategorySlug = slug),
         ),
         verticalSpace(24),
-        Text('explore.writers_title'.tr(), style: textTheme.displaySmall),
+        Text('explore.writers_title'.tr(), style: AppTextStyles.font20Bold),
         verticalSpace(12),
-        // IntrinsicHeight (rather than a guessed fixed SizedBox height) lets
-        // this shelf size itself to whatever the tallest card actually
-        // needs — safe across locales (Arabic's longer follower/bio text),
-        // font-scale settings, and future copy edits, none of which a fixed
-        // number would survive without silently clipping or overflowing.
+
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: IntrinsicHeight(
@@ -176,7 +167,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
         ),
         verticalSpace(24),
-        Text('explore.recommended_title'.tr(), style: textTheme.displaySmall),
+        Text('explore.recommended_title'.tr(), style: AppTextStyles.font20Bold),
         verticalSpace(12),
         for (final entry in spotlights.asMap().entries)
           Padding(
@@ -238,7 +229,6 @@ class _WriterCardState extends State<_WriterCard> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final writer = widget.writer;
     final followers = writer.followers + (_following ? 1 : 0);
 
@@ -254,16 +244,16 @@ class _WriterCardState extends State<_WriterCard> {
             writer.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+            style: AppTextStyles.font16SemiBold,
           ),
           verticalSpace(2),
-          Text('explore.followers_count'.tr(args: ['$followers']), style: textTheme.labelSmall),
+          Text('explore.followers_count'.tr(args: ['$followers']), style: AppTextStyles.font12Medium.secondary(context)),
           verticalSpace(6),
           Text(
             writer.bio,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: textTheme.labelMedium,
+            style: AppTextStyles.font12Medium.secondary(context),
           ),
           verticalSpace(10),
           _FollowButton(
@@ -285,7 +275,6 @@ class _FollowButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return SizedBox(
       width: double.infinity,
@@ -298,9 +287,8 @@ class _FollowButton extends StatelessWidget {
         ),
         child: Text(
           following ? 'explore.following'.tr() : 'explore.follow'.tr(),
-          style: textTheme.labelMedium?.copyWith(
+          style: AppTextStyles.font12SemiBold.copyWith(
             color: following ? colorScheme.secondary : colorScheme.onSurface,
-            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -318,7 +306,6 @@ class _SpotlightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return AppCard(
       padding: EdgeInsets.all(10.w),
@@ -342,24 +329,21 @@ class _SpotlightCard extends StatelessWidget {
               children: [
                 Text(
                   categoryName,
-                  style: textTheme.labelSmall?.copyWith(
-                    color: colorScheme.secondary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTextStyles.font12SemiBold.copyWith(color: colorScheme.secondary),
                 ),
                 verticalSpace(4),
                 Text(
                   post.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                  style: AppTextStyles.font16SemiBold,
                 ),
                 verticalSpace(4),
                 Text(
                   post.excerpt,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.labelMedium,
+                  style: AppTextStyles.font12Medium.secondary(context),
                 ),
                 verticalSpace(8),
                 Row(
@@ -371,10 +355,10 @@ class _SpotlightCard extends StatelessWidget {
                         post.authorName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: textTheme.labelSmall,
+                        style: AppTextStyles.font12Medium.secondary(context),
                       ),
                     ),
-                    Text(formatRelativeDate(post.publishedAt), style: textTheme.labelSmall),
+                    Text(formatRelativeDate(post.publishedAt), style: AppTextStyles.font12Medium.secondary(context)),
                   ],
                 ),
               ],

@@ -41,7 +41,6 @@ class FeedCubit extends Cubit<FeedState> {
     await _loadPosts(page: 1, replace: true);
   }
 
-  /// Debounced so typing doesn't fire a request per keystroke.
   void search(String query) {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 400), () {

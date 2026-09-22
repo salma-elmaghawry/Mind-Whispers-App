@@ -17,8 +17,6 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
     return const [];
   }
 
-  
-// categories
   @override
   Future<List<CategoryModel>> getCategories({String? search}) async {
     final response = await _dio.get(
@@ -29,7 +27,7 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
         .map((json) => CategoryModel.fromJson(json as Map<String, dynamic>))
         .toList();
   }
-//========================posts========================
+
   @override
   Future<PaginatedModel<PostModel>> getPosts({
     String? search,
@@ -49,14 +47,13 @@ class ReaderRemoteDataSourceImpl implements ReaderRemoteDataSource {
       PostModel.fromJson,
     );
   }
-  // get post by id
 
   @override
   Future<PostModel> getPost(int id) async {
     final response = await _dio.get(ApiEndpoints.post(id));
     return PostModel.fromJson(response.data as Map<String, dynamic>);
   }
-//========================comments========================
+
   @override
   Future<List<CommentModel>> getComments(int postId, {int page = 1}) async {
     final response = await _dio.get(

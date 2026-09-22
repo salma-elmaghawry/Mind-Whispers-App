@@ -20,7 +20,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 final GetIt getIt = GetIt.instance;
 
 Future<void> setupInjection() async {
-  // Core
   final sharedPreferences = await SharedPreferences.getInstance();
   getIt.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
   getIt.registerLazySingleton(() => AppRouter());
@@ -28,9 +27,6 @@ Future<void> setupInjection() async {
   getIt.registerLazySingleton<DeviceIdProvider>(() => DeviceIdProvider(getIt()));
   getIt.registerFactory<ThemeCubit>(() => ThemeCubit(getIt()));
 
-
-
-  // Auth (see api-1.json for the real endpoint contract)
   getIt.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(getIt(), getIt()),
   );
@@ -39,7 +35,6 @@ Future<void> setupInjection() async {
   );
   getIt.registerFactory<AuthCubit>(() => AuthCubit(getIt()));
 
-  // Reader (feed/post detail/comments) — real backend, see api-1.json.
   getIt.registerLazySingleton<ReaderRemoteDataSource>(() => ReaderRemoteDataSourceImpl(getIt()));
   getIt.registerLazySingleton<ReaderRepository>(() => ReaderRepositoryImpl(getIt()));
   getIt.registerFactory<FeedCubit>(() => FeedCubit(getIt()));

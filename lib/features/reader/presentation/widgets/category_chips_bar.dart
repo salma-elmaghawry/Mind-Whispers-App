@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mind_whispers_app/core/helpers/extensions.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
 import 'package:mind_whispers_app/features/reader/domain/entities/category.dart';
-
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
 class CategoryChipsBar extends StatelessWidget {
   final List<Category> categories;
@@ -51,7 +51,6 @@ class _Pill extends StatelessWidget {
   final String label;
   final bool selected;
 
-
   final Color? color;
   final VoidCallback onTap;
 
@@ -60,9 +59,8 @@ class _Pill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final selectedColor = color ?? colorScheme.secondary;
-  
+
     final onSelectedColor = ThemeData.estimateBrightnessForColor(selectedColor) == Brightness.dark
         ? Colors.white
         : Colors.black;
@@ -79,9 +77,8 @@ class _Pill extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: textTheme.labelLarge?.copyWith(
+          style: (selected ? AppTextStyles.font14SemiBold : AppTextStyles.font14Medium).copyWith(
             color: selected ? onSelectedColor : colorScheme.onSurface.withValues(alpha: 0.7),
-            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
           ),
         ),
       ),

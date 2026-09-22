@@ -1,20 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html_parser;
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// Renders a small, known subset of HTML — enough for a post's `content`
-/// from the live API (headings, paragraphs, blockquotes, bold/italic text,
-/// and lists; see `GET /posts/{post}` in api-1.json, whose `content` field
-/// turned out to be real HTML rather than plain text). Not a
-/// general-purpose HTML renderer: no images/iframes/tables.
-///
-/// Written by hand instead of pulling in a package for this because the
-/// two obvious ones were a poor fit: `flutter_html` 3.0.0 fails to even
-/// compile against this project's Dart SDK (a transitive `csslib`/`html`
-/// version conflict — caught by `flutter test`, not `flutter analyze`),
-/// and `flutter_widget_from_html` drags in ~55 transitive packages
-/// (video_player, webview_flutter, url_launcher…) for content that never
-/// needs any of them.
 class RichHtmlText extends StatelessWidget {
   final String html;
 
@@ -32,7 +20,6 @@ class RichHtmlText extends StatelessWidget {
   }
 
   Widget? _renderNode(BuildContext context, dom.Node node) {
-    final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
     if (node is dom.Text) {
@@ -40,7 +27,7 @@ class RichHtmlText extends StatelessWidget {
       if (text.isEmpty) return null;
       return Padding(
         padding: const EdgeInsets.only(bottom: 14),
-        child: Text(text, style: textTheme.bodyLarge),
+        child: Text(text, style: AppTextStyles.font18Normal),
       );
     }
     if (node is! dom.Element) return null;
@@ -53,12 +40,12 @@ class RichHtmlText extends StatelessWidget {
         if (text.isEmpty) return null;
         return Padding(
           padding: const EdgeInsets.only(top: 10, bottom: 8),
-          child: Text(text, style: textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w700)),
+          child: Text(text, style: AppTextStyles.font20Bold),
         );
       case 'p':
         return Padding(
           padding: const EdgeInsets.only(bottom: 14),
-          child: _inlineText(context, node, textTheme.bodyLarge),
+          child: _inlineText(context, node, AppTextStyles.font18Normal),
         );
       case 'blockquote':
         return Container(
@@ -70,7 +57,7 @@ class RichHtmlText extends StatelessWidget {
           child: _inlineText(
             context,
             node,
-            textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic),
+            AppTextStyles.font18Normal.copyWith(fontStyle: FontStyle.italic),
           ),
         );
       case 'ul':
@@ -87,8 +74,8 @@ class RichHtmlText extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('•  ', style: textTheme.bodyLarge),
-                      Expanded(child: _inlineText(context, item, textTheme.bodyLarge)),
+                      Text('•  ', style: AppTextStyles.font18Normal),
+                      Expanded(child: _inlineText(context, item, AppTextStyles.font18Normal)),
                     ],
                   ),
                 ),
@@ -98,20 +85,16 @@ class RichHtmlText extends StatelessWidget {
       case 'br':
         return const SizedBox(height: 8);
       default:
-        // Unknown block element — render its text content plainly rather
-        // than dropping it silently.
         final text = node.text.trim();
         if (text.isEmpty) return null;
         return Padding(
           padding: const EdgeInsets.only(bottom: 14),
-          child: Text(text, style: textTheme.bodyLarge),
+          child: Text(text, style: AppTextStyles.font18Normal),
         );
     }
   }
 
-  /// Builds one [Text.rich] for an element's inline content (bold/italic/
-  /// links mixed with plain text) instead of flattening it to plain text.
-  Widget _inlineText(BuildContext context, dom.Element element, TextStyle? baseStyle) {
+  Widget _inlineText(BuildContext context, dom.Element element, TextStyle baseStyle) {
     final colorScheme = Theme.of(context).colorScheme;
     final spans = <InlineSpan>[];
 
@@ -151,7 +134,7 @@ class RichHtmlText extends StatelessWidget {
     }
 
     for (final node in element.nodes) {
-      visit(node, baseStyle ?? const TextStyle());
+      visit(node, baseStyle);
     }
 
     return Text.rich(TextSpan(children: spans));

@@ -10,7 +10,7 @@ import 'package:mind_whispers_app/core/helpers/extensions.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
 import 'package:mind_whispers_app/core/routes/routes.dart';
 import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_cubit.dart';
-
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _decideNextRoute() async {
     final authCubit = context.read<AuthCubit>();
-  
+
     final minDelay = Future<void>.delayed(const Duration(milliseconds: 900));
     await Future.wait([minDelay, authCubit.checkAuthStatus()]);
     if (!mounted) return;
@@ -57,12 +57,12 @@ class _SplashScreenState extends State<SplashScreen> {
             verticalSpace(16),
             Text(
               'app_name'.tr(),
-              style: Theme.of(context).textTheme.displaySmall,
+              style: AppTextStyles.font20Bold,
             ).fadeInSlideUp(delay: 120.ms),
             verticalSpace(6),
             Text(
               'tagline'.tr(),
-              style: Theme.of(context).textTheme.bodySmall,
+              style: AppTextStyles.font14Normal.secondary(context),
             ).fadeInSlideUp(delay: 180.ms),
           ],
         ),

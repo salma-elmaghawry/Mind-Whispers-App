@@ -18,8 +18,8 @@ class ReaderRepositoryImpl implements ReaderRepository {
     try {
       final models = await _remoteDataSource.getCategories(search: search);
       return Right(models.map((model) => model.toEntity()).toList());
-    } catch (e) {
-      return Left(ErrorMapper.map(e));
+    } catch (e, s) {
+      return Left(ErrorMapper.map(e, s));
     }
   }
 
@@ -36,8 +36,8 @@ class ReaderRepositoryImpl implements ReaderRepository {
         page: page,
       );
       return Right(model.toEntity((postModel) => postModel.toEntity()));
-    } catch (e) {
-      return Left(ErrorMapper.map(e));
+    } catch (e, s) {
+      return Left(ErrorMapper.map(e, s));
     }
   }
 
@@ -46,8 +46,8 @@ class ReaderRepositoryImpl implements ReaderRepository {
     try {
       final model = await _remoteDataSource.getPost(id);
       return Right(model.toEntity());
-    } catch (e) {
-      return Left(ErrorMapper.map(e));
+    } catch (e, s) {
+      return Left(ErrorMapper.map(e, s));
     }
   }
 
@@ -56,8 +56,8 @@ class ReaderRepositoryImpl implements ReaderRepository {
     try {
       final models = await _remoteDataSource.getComments(postId, page: page);
       return Right(models.map((model) => model.toEntity()).toList());
-    } catch (e) {
-      return Left(ErrorMapper.map(e));
+    } catch (e, s) {
+      return Left(ErrorMapper.map(e, s));
     }
   }
 
@@ -74,8 +74,8 @@ class ReaderRepositoryImpl implements ReaderRepository {
         parentId: parentId,
       );
       return Right(model.toEntity());
-    } catch (e) {
-      return Left(ErrorMapper.map(e));
+    } catch (e, s) {
+      return Left(ErrorMapper.map(e, s));
     }
   }
 }

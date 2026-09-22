@@ -13,6 +13,7 @@ import 'package:mind_whispers_app/core/widgets/app_button.dart';
 import 'package:mind_whispers_app/core/widgets/app_text_field.dart';
 import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_state.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -92,12 +93,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     verticalSpace(16),
                     Text(
                       'auth.signup.title'.tr(),
-                      style: Theme.of(context).textTheme.displayMedium,
+                      style: AppTextStyles.font24Bold,
                     ).fadeInSlideUp(),
                     verticalSpace(8),
                     Text(
                       'auth.signup.subtitle'.tr(),
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: AppTextStyles.font16Normal,
                     ).fadeInSlideUp(delay: 60.ms),
                     verticalSpace(32),
                     ...AnimationBuilder.staggerColumn(
@@ -163,7 +164,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           children: [
                             Text(
                               'auth.signup.have_account'.tr(),
-                              style: Theme.of(context).textTheme.bodyMedium,
+                              style: AppTextStyles.font16Normal,
                             ),
                             TextButton(
                               onPressed: () =>

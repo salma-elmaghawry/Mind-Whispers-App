@@ -13,12 +13,6 @@ class PostDetailState extends BaseState {
   final bool isLoadingMoreComments;
   final bool isSubmittingComment;
 
-  /// True when the most recent comments fetch (initial load or "load more")
-  /// failed. Kept separate from [BaseState.status]/[isFailure], which only
-  /// tracks the *post* fetch — without this, a failed `GET
-  /// /posts/{post}/comments` left [comments] empty with no signal that
-  /// anything went wrong, so the UI rendered the same "no comments yet"
-  /// empty state as a post that genuinely has none.
   final bool commentsLoadFailed;
   final Failure? failure;
   final PostDetailAction? action;

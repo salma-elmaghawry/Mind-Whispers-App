@@ -3,11 +3,6 @@ import 'package:mind_whispers_app/core/bloc/base_bloc.dart';
 import 'package:mind_whispers_app/features/reader/presentation/cubit/post_detail/post_detail_state.dart';
 import 'package:mind_whispers_app/features/reader/repository/reader_repository.dart';
 
-/// `GET /posts/{post}/comments` (see api-1.json) pages via `?page=` and, on
-/// the live API, wraps its array in a Laravel paginator (`data` + `links` +
-/// `meta`) — but [ReaderRemoteDataSource.getComments] only surfaces the
-/// `data` array, not `meta.total`/`meta.last_page`, so "no more pages" is
-/// inferred here from getting back fewer than a full page instead.
 const int _commentsPageSize = 10;
 
 class PostDetailCubit extends Cubit<PostDetailState> {
@@ -42,20 +37,11 @@ class PostDetailCubit extends Cubit<PostDetailState> {
     await _loadComments(page: state.currentPage + 1, replace: false);
   }
 
-  /// Re-runs the initial (page 1) comments fetch after [commentsLoadFailed]
-  /// — exposed separately from [loadMoreComments] because that guards on
-  /// [PostDetailState.hasMoreComments], which is still false the first time
-  /// a fetch fails and would otherwise make a retry a no-op.
   Future<void> retryLoadComments() async {
     await _loadComments(page: 1, replace: true);
   }
 
   Future<void> _loadComments({required int page, required bool replace}) async {
-    // Set unconditionally, including for the initial (`replace: true`) load:
-    // the screen treats "empty comments" and "still loading comments" as
-    // the same `!isLoadingMoreComments` check, so leaving this false during
-    // the first fetch made a post with real comments flash an incorrect
-    // "no comments yet" empty state before they arrived.
     emit(state.copyWith(isLoadingMoreComments: true));
     final result = await _repository.getComments(postId, page: page);
     result.fold(
@@ -81,9 +67,6 @@ class PostDetailCubit extends Cubit<PostDetailState> {
     );
   }
 
-  /// The comment's author is whoever the request's Bearer token identifies
-  /// — reachable screens are always behind sign-in, so there's no signed-out
-  /// path to guard against here.
   Future<void> addComment({required String content, int? parentId}) async {
     emit(state.copyWith(isSubmittingComment: true, action: PostDetailAction.addComment));
     final result = await _repository.addComment(postId: postId, content: content, parentId: parentId);

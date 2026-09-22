@@ -4,11 +4,8 @@ import 'package:mind_whispers_app/core/helpers/spacing.dart';
 import 'package:mind_whispers_app/features/reader/domain/entities/comment.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/author_avatar.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/relative_date.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// Renders one comment and, indented beneath it, its direct [Comment.replies]
-/// — the API only nests one level deep, so this never recurses further than
-/// that in practice. There's no delete-comment endpoint in api-1.json, so
-/// unlike the old fake-backed version of this tile there's no delete action.
 class CommentTile extends StatelessWidget {
   final Comment comment;
 
@@ -32,7 +29,6 @@ class CommentTile extends StatelessWidget {
   }
 
   Widget _buildRow(BuildContext context, Comment comment) {
-    final textTheme = Theme.of(context).textTheme;
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -50,15 +46,15 @@ class CommentTile extends StatelessWidget {
                     Expanded(
                       child: Text(
                         comment.author.name,
-                        style: textTheme.labelLarge,
+                        style: AppTextStyles.font14Medium,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Text(formatRelativeDate(comment.createdAt), style: textTheme.labelMedium),
+                    Text(formatRelativeDate(comment.createdAt), style: AppTextStyles.font12Medium.secondary(context)),
                   ],
                 ),
                 verticalSpace(4),
-                Text(comment.content, style: textTheme.bodyMedium),
+                Text(comment.content, style: AppTextStyles.font16Normal),
               ],
             ),
           ),

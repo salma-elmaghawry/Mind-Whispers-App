@@ -30,9 +30,6 @@ class FeedState extends BaseState {
     this.action,
   });
 
-  /// True on the very first load, before categories/posts have ever
-  /// resolved — used by [FeedScreen] to show full-screen skeletons instead
-  /// of a stale/empty list under a spinner.
   bool get isInitialLoad => isLoading && posts.isEmpty && categories.isEmpty;
 
   FeedState copyWith({

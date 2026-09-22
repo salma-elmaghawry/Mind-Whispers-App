@@ -1,8 +1,5 @@
 import 'package:mind_whispers_app/features/reader/domain/entities/paginated.dart';
 
-/// Parses the Laravel paginator envelope: `{ data: [...], meta: {
-/// current_page, per_page, total, last_page } }`. [fromJson] takes the item
-/// mapper since `T` varies per endpoint.
 class PaginatedModel<T> {
   final List<T> items;
   final int currentPage;
