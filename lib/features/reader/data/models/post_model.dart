@@ -2,16 +2,16 @@ import 'package:mind_whispers_app/features/reader/data/models/author_ref_model.d
 import 'package:mind_whispers_app/features/reader/data/models/category_model.dart';
 import 'package:mind_whispers_app/features/reader/domain/entities/post.dart';
 
-/// Matches the `Post` resource in API_CONTRACT.md.
 class PostModel {
   final int id;
   final String title;
   final String slug;
-  final String body;
   final String excerpt;
-  final String? coverImageUrl;
+  final String? content;
+  final String? featuredImage;
   final String status;
-  final CategoryModel category;
+  final bool isPremium;
+  final List<CategoryModel> categories;
   final AuthorRefModel author;
   final int commentsCount;
   final DateTime createdAt;
@@ -21,11 +21,12 @@ class PostModel {
     required this.id,
     required this.title,
     required this.slug,
-    required this.body,
     required this.excerpt,
-    required this.coverImageUrl,
+    required this.content,
+    required this.featuredImage,
     required this.status,
-    required this.category,
+    required this.isPremium,
+    required this.categories,
     required this.author,
     required this.commentsCount,
     required this.createdAt,
@@ -33,21 +34,29 @@ class PostModel {
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
+    final createdAtRaw = json['created_at'] as String?;
+    final publishedAtRaw = json['published_at'] as String?;
+
     return PostModel(
       id: json['id'] as int,
       title: json['title'] as String,
       slug: json['slug'] as String,
-      body: json['body'] as String,
-      excerpt: json['excerpt'] as String,
-      coverImageUrl: json['cover_image_url'] as String?,
+      excerpt: json['excerpt'] as String? ?? '',
+      content: json['content'] as String?,
+      featuredImage: json['featured_image'] as String?,
       status: json['status'] as String,
-      category: CategoryModel.fromJson(json['category'] as Map<String, dynamic>),
-      author: AuthorRefModel.fromJson(json['author'] as Map<String, dynamic>),
-      commentsCount: json['comments_count'] as int,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      publishedAt: json['published_at'] != null
-          ? DateTime.tryParse(json['published_at'] as String)
-          : null,
+      isPremium: json['is_premium'] as bool? ?? false,
+      categories: (json['categories'] as List<dynamic>? ?? const [])
+          .map((c) => CategoryModel.fromJson(c as Map<String, dynamic>))
+          .toList(),
+      author: json['author'] != null
+          ? AuthorRefModel.fromJson(json['author'] as Map<String, dynamic>)
+          : const AuthorRefModel(id: 0, name: ''),
+      commentsCount: json['comments_count'] as int? ?? 0,
+      createdAt: createdAtRaw != null
+          ? (DateTime.tryParse(createdAtRaw) ?? DateTime.now())
+          : DateTime.now(),
+      publishedAt: publishedAtRaw != null ? DateTime.tryParse(publishedAtRaw) : null,
     );
   }
 
@@ -56,11 +65,12 @@ class PostModel {
       id: id,
       title: title,
       slug: slug,
-      body: body,
       excerpt: excerpt,
-      coverImageUrl: coverImageUrl,
+      content: content,
+      coverImageUrl: featuredImage,
       status: status,
-      category: category.toEntity(),
+      isPremium: isPremium,
+      categories: categories.map((c) => c.toEntity()).toList(),
       author: author.toEntity(),
       commentsCount: commentsCount,
       createdAt: createdAt,

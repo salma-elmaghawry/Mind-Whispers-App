@@ -30,18 +30,17 @@ class FeedCubit extends Cubit<FeedState> {
 
   Future<void> refresh() => _loadPosts(page: 1, replace: true);
 
-  Future<void> selectCategory(int? categoryId) async {
-    if (state.selectedCategoryId == categoryId) return;
+  Future<void> selectCategory(String? categorySlug) async {
+    if (state.selectedCategorySlug == categorySlug) return;
     emit(
       state.copyWith(
-        selectedCategoryId: categoryId,
-        clearSelectedCategory: categoryId == null,
+        selectedCategorySlug: categorySlug,
+        clearSelectedCategory: categorySlug == null,
       ),
     );
     await _loadPosts(page: 1, replace: true);
   }
 
-  /// Debounced so typing doesn't fire a request per keystroke.
   void search(String query) {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 400), () {
@@ -63,8 +62,8 @@ class FeedCubit extends Cubit<FeedState> {
     }
 
     final result = await _repository.getPosts(
-      categoryId: state.selectedCategoryId,
-      search: state.searchQuery,
+      categorySlug: state.selectedCategorySlug,
+      search: state.searchQuery.isEmpty ? null : state.searchQuery,
       page: page,
     );
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
 class LoadingOverlay extends StatelessWidget {
   final Widget child;
@@ -39,7 +40,7 @@ class LoadingOverlay extends StatelessWidget {
                         const SizedBox(height: 16),
                         Text(
                           message!,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
+                          style: AppTextStyles.font16Medium,
                         ),
                       ],
                     ],

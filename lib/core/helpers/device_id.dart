@@ -4,12 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const String _deviceIdPrefsKey = 'device_id';
 
-/// A stable per-install identifier sent as `device_name` on every Sanctum
-/// auth request (register/login/logout) — see api-1.json's Auth overview:
-/// "a stable device_name (for example the phone model or a generated UUID
-/// for that install)". Generated once on first use and persisted; a fresh
-/// install (or cleared app storage) simply gets a new one, which just shows
-/// up as a separate token record on the backend.
 class DeviceIdProvider {
   final SharedPreferences _prefs;
 
@@ -27,8 +21,8 @@ class DeviceIdProvider {
   String _generateUuidV4() {
     final random = Random.secure();
     final bytes = List<int>.generate(16, (_) => random.nextInt(256));
-    bytes[6] = (bytes[6] & 0x0F) | 0x40; // version 4
-    bytes[8] = (bytes[8] & 0x3F) | 0x80; // variant 10xx
+    bytes[6] = (bytes[6] & 0x0F) | 0x40;
+    bytes[8] = (bytes[8] & 0x3F) | 0x80;
 
     String hex(int start, int end) => bytes
         .sublist(start, end)

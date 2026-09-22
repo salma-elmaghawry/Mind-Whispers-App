@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// Every text input in the app, so label/hint/error styling and the
-/// password reveal toggle stay consistent instead of being rebuilt per form.
 class AppTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String label;
@@ -13,6 +13,7 @@ class AppTextField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final Widget? prefixIcon;
   final TextInputAction textInputAction;
+  final List<TextInputFormatter>? inputFormatters;
 
   const AppTextField({
     super.key,
@@ -25,6 +26,7 @@ class AppTextField extends StatefulWidget {
     this.onChanged,
     this.prefixIcon,
     this.textInputAction = TextInputAction.next,
+    this.inputFormatters,
   });
 
   @override
@@ -46,10 +48,11 @@ class _AppTextFieldState extends State<AppTextField> {
       controller: widget.controller,
       obscureText: _obscured,
       keyboardType: widget.keyboardType,
+      inputFormatters: widget.inputFormatters,
       validator: widget.validator,
       onChanged: widget.onChanged,
       textInputAction: widget.textInputAction,
-      style: Theme.of(context).textTheme.bodyMedium,
+      style: AppTextStyles.font16Normal,
       decoration: InputDecoration(
         labelText: widget.label,
         hintText: widget.hint,

@@ -5,6 +5,7 @@ import 'package:mind_whispers_app/core/theme/app_colors.dart';
 import 'package:mind_whispers_app/core/widgets/app_card.dart';
 import 'package:mind_whispers_app/features/reader/domain/entities/post.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/post_cover_image.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
@@ -17,10 +18,6 @@ class PostCard extends StatefulWidget {
 }
 
 class _PostCardState extends State<PostCard> {
-  // The API doesn't have a likes concept yet (see API_CONTRACT.md), so the
-  // count shown here is a deterministic, per-session display value seeded
-  // from the post id — not persisted, not real engagement data. Liking/
-  // bookmarking only flips local UI state; neither survives a refresh.
   late bool _liked;
   late int _likeCount;
   bool _bookmarked = false;
@@ -44,7 +41,6 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final post = widget.post;
 
     return AppCard(
@@ -62,21 +58,22 @@ class _PostCardState extends State<PostCard> {
                   borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
                 ),
               ),
-              Positioned(
-                top: 10.h,
-                left: 10.w,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.55),
-                    borderRadius: BorderRadius.circular(20.r),
-                  ),
-                  child: Text(
-                    post.category.name,
-                    style: textTheme.labelMedium?.copyWith(color: Colors.white),
+              if (post.primaryCategory != null)
+                Positioned(
+                  top: 10.h,
+                  left: 10.w,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.55),
+                      borderRadius: BorderRadius.circular(20.r),
+                    ),
+                    child: Text(
+                      post.primaryCategory!.name,
+                      style: AppTextStyles.font12Medium.copyWith(color: Colors.white),
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
           Padding(
@@ -88,21 +85,21 @@ class _PostCardState extends State<PostCard> {
                   post.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.displaySmall,
+                  style: AppTextStyles.font20Bold,
                 ),
                 verticalSpace(6),
                 Text(
                   post.excerpt,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodySmall,
+                  style: AppTextStyles.font14Normal.secondary(context),
                 ),
                 verticalSpace(8),
                 Text(
                   'By ${post.author.name}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.labelMedium,
+                  style: AppTextStyles.font12Medium.secondary(context),
                 ),
                 verticalSpace(12),
                 Row(
@@ -162,7 +159,7 @@ class _IconCount extends StatelessWidget {
         children: [
           Icon(icon, size: 18.sp, color: iconColor),
           horizontalSpace(5),
-          Text('$count', style: Theme.of(context).textTheme.labelMedium),
+          Text('$count', style: AppTextStyles.font12Medium.secondary(context)),
         ],
       ),
     );

@@ -2,7 +2,7 @@ import 'package:mind_whispers_app/core/bloc/base_bloc.dart';
 import 'package:mind_whispers_app/core/error_handling/failures.dart';
 import 'package:mind_whispers_app/features/auth/domain/entities/user.dart';
 
-enum AuthAction { checkStatus, register, login, logout }
+enum AuthAction { checkStatus, register, login, logout, forgotPassword, resetPassword }
 
 class AuthState extends BaseState {
   final User? user;

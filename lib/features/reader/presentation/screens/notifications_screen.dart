@@ -8,6 +8,7 @@ import 'package:mind_whispers_app/core/theme/app_colors.dart';
 import 'package:mind_whispers_app/core/widgets/app_card.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/author_avatar.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/relative_date.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
 enum _NotificationType { like, comment, follow, mention, system }
 
@@ -29,12 +30,6 @@ class _NotificationItem {
   });
 }
 
-/// The Notifications tab of [ReaderHomeScreen]. There's no `/notifications`
-/// endpoint yet (see API_CONTRACT.md) — this list is static sample data,
-/// not wired to any repository, the same placeholder approach `WriteScreen`
-/// takes for "my posts". Tapping an item flips its own read state locally,
-/// the same ephemeral, per-session UI state `PostCard` uses for like/
-/// bookmark — nothing here is persisted or synced.
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
 
@@ -106,7 +101,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final hasUnread = _items.any((item) => !item.read);
 
     return ListView(
@@ -114,7 +108,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       children: [
         Row(
           children: [
-            Expanded(child: Text('notifications.title'.tr(), style: textTheme.displaySmall)),
+            Expanded(child: Text('notifications.title'.tr(), style: AppTextStyles.font20Bold)),
             TextButton(
               onPressed: hasUnread ? _markAllRead : null,
               child: Text('notifications.mark_all_read'.tr()),
@@ -160,7 +154,6 @@ class _NotificationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final actorName = item.actorName;
     final actorAvatarUrl = item.actorAvatarUrl;
 
@@ -193,12 +186,10 @@ class _NotificationTile extends StatelessWidget {
                   item.message,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodyMedium?.copyWith(
-                    fontWeight: item.read ? FontWeight.w400 : FontWeight.w600,
-                  ),
+                  style: item.read ? AppTextStyles.font16Normal : AppTextStyles.font16SemiBold,
                 ),
                 verticalSpace(4),
-                Text(formatRelativeDate(item.createdAt), style: textTheme.labelSmall),
+                Text(formatRelativeDate(item.createdAt), style: AppTextStyles.font12Medium.secondary(context)),
               ],
             ),
           ),

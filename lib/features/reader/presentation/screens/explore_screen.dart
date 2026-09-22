@@ -13,12 +13,8 @@ import 'package:mind_whispers_app/features/reader/presentation/widgets/author_av
 import 'package:mind_whispers_app/features/reader/presentation/widgets/category_chips_bar.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/post_cover_image.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/relative_date.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// The Explore tab of [ReaderHomeScreen]: curated category chips, a
-/// "writers to follow" shelf, and a recommended-reads shelf. There's no
-/// `/explore` endpoint yet (see API_CONTRACT.md), so every shelf here is
-/// static sample data, not wired to `ReaderRepository` — the same
-/// placeholder approach `WriteScreen` takes for "my posts".
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
 
@@ -28,10 +24,10 @@ class ExploreScreen extends StatefulWidget {
 
 class _ExploreScreenState extends State<ExploreScreen> {
   static const List<Category> _categories = [
-    Category(id: 1, name: 'Fiction', slug: 'fiction'),
-    Category(id: 2, name: 'Non-Fiction', slug: 'non-fiction'),
-    Category(id: 3, name: 'Self-Dev', slug: 'self-dev'),
-    Category(id: 4, name: 'Poetry', slug: 'poetry'),
+    Category(id: 1, name: 'Fiction', slug: 'fiction', color: '#A78BFA'),
+    Category(id: 2, name: 'Non-Fiction', slug: 'non-fiction', color: '#2E6F5B'),
+    Category(id: 3, name: 'Self-Dev', slug: 'self-dev', color: '#B5793A'),
+    Category(id: 4, name: 'Poetry', slug: 'poetry', color: '#E8547A'),
   ];
 
   static final List<_WriterSpotlight> _writers = [
@@ -66,7 +62,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       title: 'On writing slowly',
       excerpt: 'Why the best sentences are the ones you were willing to throw away twice.',
       coverImageUrl: 'https://picsum.photos/seed/on-writing-slowly/400/400',
-      categoryId: 2,
+      categorySlug: 'non-fiction',
       authorName: 'Maryam Eid',
       publishedAt: DateTime.now().subtract(const Duration(days: 2)),
     ),
@@ -74,7 +70,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       title: 'The lighthouse keeper\'s daughter',
       excerpt: 'She counted the ships the way other children counted sheep.',
       coverImageUrl: 'https://picsum.photos/seed/lighthouse-keeper/400/400',
-      categoryId: 1,
+      categorySlug: 'fiction',
       authorName: 'Layla Haddad',
       publishedAt: DateTime.now().subtract(const Duration(days: 5)),
     ),
@@ -82,7 +78,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       title: 'Five habits that quietly rebuilt my mornings',
       excerpt: 'None of them involve waking up at 5am, and that is the point.',
       coverImageUrl: 'https://picsum.photos/seed/morning-habits/400/400',
-      categoryId: 3,
+      categorySlug: 'self-dev',
       authorName: 'Omar Farouk',
       publishedAt: DateTime.now().subtract(const Duration(days: 1)),
     ),
@@ -90,7 +86,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       title: 'Instructions for leaving a small town',
       excerpt: 'A poem about the roads that only make sense once you\'re already gone.',
       coverImageUrl: 'https://picsum.photos/seed/leaving-small-town/400/400',
-      categoryId: 4,
+      categorySlug: 'poetry',
       authorName: 'Layla Haddad',
       publishedAt: DateTime.now().subtract(const Duration(days: 3)),
     ),
@@ -98,7 +94,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       title: 'What the archive would not tell us',
       excerpt: 'A year spent in a basement of city records, looking for one missing name.',
       coverImageUrl: 'https://picsum.photos/seed/the-archive/400/400',
-      categoryId: 2,
+      categorySlug: 'non-fiction',
       authorName: 'Yusuf Kanaan',
       publishedAt: DateTime.now().subtract(const Duration(days: 9)),
     ),
@@ -106,21 +102,21 @@ class _ExploreScreenState extends State<ExploreScreen> {
       title: 'The productivity system that finally survived a bad week',
       excerpt: 'Every system works when things are calm. Here is the one that held anyway.',
       coverImageUrl: 'https://picsum.photos/seed/productivity-system/400/400',
-      categoryId: 3,
+      categorySlug: 'self-dev',
       authorName: 'Omar Farouk',
       publishedAt: DateTime.now().subtract(const Duration(days: 6)),
     ),
   ];
 
-  int? _selectedCategoryId;
+  String? _selectedCategorySlug;
 
   List<_PostSpotlight> get _filteredSpotlights {
-    final categoryId = _selectedCategoryId;
-    if (categoryId == null) return _spotlights;
-    return _spotlights.where((post) => post.categoryId == categoryId).toList();
+    final categorySlug = _selectedCategorySlug;
+    if (categorySlug == null) return _spotlights;
+    return _spotlights.where((post) => post.categorySlug == categorySlug).toList();
   }
 
-  String _categoryName(int id) => _categories.firstWhere((c) => c.id == id).name;
+  String _categoryName(String slug) => _categories.firstWhere((c) => c.slug == slug).name;
 
   void _openComingSoon(_PostSpotlight post) {
     context.pushNamed(
@@ -135,29 +131,24 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final spotlights = _filteredSpotlights;
 
     return ListView(
       padding: EdgeInsetsDirectional.fromSTEB(16.w, 16.h, 16.w, 24.h),
       children: [
-        Text('explore.title'.tr(), style: textTheme.displaySmall).fadeInSlideUp(),
+        Text('explore.title'.tr(), style: AppTextStyles.font20Bold).fadeInSlideUp(),
         verticalSpace(4),
-        Text('explore.subtitle'.tr(), style: textTheme.bodySmall).fadeInSlideUp(delay: 40.ms),
+        Text('explore.subtitle'.tr(), style: AppTextStyles.font14Normal.secondary(context)).fadeInSlideUp(delay: 40.ms),
         verticalSpace(16),
         CategoryChipsBar(
           categories: _categories,
-          selectedCategoryId: _selectedCategoryId,
-          onSelected: (id) => setState(() => _selectedCategoryId = id),
+          selectedCategorySlug: _selectedCategorySlug,
+          onSelected: (slug) => setState(() => _selectedCategorySlug = slug),
         ),
         verticalSpace(24),
-        Text('explore.writers_title'.tr(), style: textTheme.displaySmall),
+        Text('explore.writers_title'.tr(), style: AppTextStyles.font20Bold),
         verticalSpace(12),
-        // IntrinsicHeight (rather than a guessed fixed SizedBox height) lets
-        // this shelf size itself to whatever the tallest card actually
-        // needs — safe across locales (Arabic's longer follower/bio text),
-        // font-scale settings, and future copy edits, none of which a fixed
-        // number would survive without silently clipping or overflowing.
+
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: IntrinsicHeight(
@@ -176,14 +167,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
         ),
         verticalSpace(24),
-        Text('explore.recommended_title'.tr(), style: textTheme.displaySmall),
+        Text('explore.recommended_title'.tr(), style: AppTextStyles.font20Bold),
         verticalSpace(12),
         for (final entry in spotlights.asMap().entries)
           Padding(
             padding: EdgeInsets.only(bottom: 14.h),
             child: _SpotlightCard(
               post: entry.value,
-              categoryName: _categoryName(entry.value.categoryId),
+              categoryName: _categoryName(entry.value.categorySlug),
               onTap: () => _openComingSoon(entry.value),
             ).fadeInSlideUp(delay: (40 * entry.key).ms),
           ),
@@ -210,7 +201,7 @@ class _PostSpotlight {
   final String title;
   final String excerpt;
   final String coverImageUrl;
-  final int categoryId;
+  final String categorySlug;
   final String authorName;
   final DateTime publishedAt;
 
@@ -218,7 +209,7 @@ class _PostSpotlight {
     required this.title,
     required this.excerpt,
     required this.coverImageUrl,
-    required this.categoryId,
+    required this.categorySlug,
     required this.authorName,
     required this.publishedAt,
   });
@@ -238,7 +229,6 @@ class _WriterCardState extends State<_WriterCard> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final writer = widget.writer;
     final followers = writer.followers + (_following ? 1 : 0);
 
@@ -254,16 +244,16 @@ class _WriterCardState extends State<_WriterCard> {
             writer.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+            style: AppTextStyles.font16SemiBold,
           ),
           verticalSpace(2),
-          Text('explore.followers_count'.tr(args: ['$followers']), style: textTheme.labelSmall),
+          Text('explore.followers_count'.tr(args: ['$followers']), style: AppTextStyles.font12Medium.secondary(context)),
           verticalSpace(6),
           Text(
             writer.bio,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: textTheme.labelMedium,
+            style: AppTextStyles.font12Medium.secondary(context),
           ),
           verticalSpace(10),
           _FollowButton(
@@ -285,7 +275,6 @@ class _FollowButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return SizedBox(
       width: double.infinity,
@@ -298,9 +287,8 @@ class _FollowButton extends StatelessWidget {
         ),
         child: Text(
           following ? 'explore.following'.tr() : 'explore.follow'.tr(),
-          style: textTheme.labelMedium?.copyWith(
+          style: AppTextStyles.font12SemiBold.copyWith(
             color: following ? colorScheme.secondary : colorScheme.onSurface,
-            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -318,7 +306,6 @@ class _SpotlightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return AppCard(
       padding: EdgeInsets.all(10.w),
@@ -342,24 +329,21 @@ class _SpotlightCard extends StatelessWidget {
               children: [
                 Text(
                   categoryName,
-                  style: textTheme.labelSmall?.copyWith(
-                    color: colorScheme.secondary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTextStyles.font12SemiBold.copyWith(color: colorScheme.secondary),
                 ),
                 verticalSpace(4),
                 Text(
                   post.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                  style: AppTextStyles.font16SemiBold,
                 ),
                 verticalSpace(4),
                 Text(
                   post.excerpt,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.labelMedium,
+                  style: AppTextStyles.font12Medium.secondary(context),
                 ),
                 verticalSpace(8),
                 Row(
@@ -371,10 +355,10 @@ class _SpotlightCard extends StatelessWidget {
                         post.authorName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: textTheme.labelSmall,
+                        style: AppTextStyles.font12Medium.secondary(context),
                       ),
                     ),
-                    Text(formatRelativeDate(post.publishedAt), style: textTheme.labelSmall),
+                    Text(formatRelativeDate(post.publishedAt), style: AppTextStyles.font12Medium.secondary(context)),
                   ],
                 ),
               ],

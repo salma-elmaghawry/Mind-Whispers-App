@@ -5,16 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mind_whispers_app/core/animations/animations.dart';
+import 'package:mind_whispers_app/core/const/app_assets.dart';
 import 'package:mind_whispers_app/core/helpers/extensions.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
 import 'package:mind_whispers_app/core/routes/routes.dart';
 import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// Boots the app and routes to the signed-in role's home, or the login
-/// screen when there's no valid session. [AuthCubit.checkAuthStatus] hits
-/// `/auth/me` to confirm any locally stored token is still valid — a
-/// Sanctum token can outlive the app (up to 30 days with `remember`) but
-/// be revoked or expired server-side, so local storage alone isn't trusted.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -31,9 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _decideNextRoute() async {
     final authCubit = context.read<AuthCubit>();
-    // Keep the branded splash on screen for a minimum stretch (so the logo
-    // animation never just flashes by on a fast/local response) while the
-    // session check runs in parallel.
+
     final minDelay = Future<void>.delayed(const Duration(milliseconds: 900));
     await Future.wait([minDelay, authCubit.checkAuthStatus()]);
     if (!mounted) return;
@@ -55,19 +50,19 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             SvgPicture.asset(
-              'assets/images/logo.svg',
+              AppAssets.logoSvg,
               width: 180.w,
               height: 180.w,
             ).fadeInScale(),
             verticalSpace(16),
             Text(
               'app_name'.tr(),
-              style: Theme.of(context).textTheme.displaySmall,
+              style: AppTextStyles.font20Bold,
             ).fadeInSlideUp(delay: 120.ms),
             verticalSpace(6),
             Text(
               'tagline'.tr(),
-              style: Theme.of(context).textTheme.bodySmall,
+              style: AppTextStyles.font14Normal.secondary(context),
             ).fadeInSlideUp(delay: 180.ms),
           ],
         ),

@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:mind_whispers_app/core/animations/app_animations.dart';
+import 'package:mind_whispers_app/core/const/app_assets.dart';
 import 'package:mind_whispers_app/core/theme/app_colors.dart';
 
 Widget centeredCupertinoLoader({Color? color, double size = 30}) {
@@ -12,4 +14,8 @@ Widget centeredCupertinoLoader({Color? color, double size = 30}) {
       ),
     ),
   );
+}
+
+Widget AddlogoPng() {
+  return Image.asset(AppAssets.logoPng, width: 150, height: 150).fadeInScale();
 }

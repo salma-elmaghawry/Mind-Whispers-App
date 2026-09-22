@@ -1,8 +1,5 @@
 import 'package:mind_whispers_app/features/reader/domain/entities/paginated.dart';
 
-/// Matches Laravel's default paginator envelope in API_CONTRACT.md:
-/// `{ data: [...], meta: { current_page, per_page, total, last_page } }`.
-/// [fromJson] takes the item mapper since `T` varies per endpoint.
 class PaginatedModel<T> {
   final List<T> items;
   final int currentPage;
@@ -22,15 +19,15 @@ class PaginatedModel<T> {
     Map<String, dynamic> json,
     T Function(Map<String, dynamic>) fromJsonT,
   ) {
-    final meta = json['meta'] as Map<String, dynamic>;
+    final meta = json['meta'] as Map<String, dynamic>?;
     return PaginatedModel(
-      items: (json['data'] as List<dynamic>)
+      items: (json['data'] as List<dynamic>? ?? const [])
           .map((item) => fromJsonT(item as Map<String, dynamic>))
           .toList(),
-      currentPage: meta['current_page'] as int,
-      perPage: meta['per_page'] as int,
-      total: meta['total'] as int,
-      lastPage: meta['last_page'] as int,
+      currentPage: meta?['current_page'] as int? ?? 1,
+      perPage: meta?['per_page'] as int? ?? 0,
+      total: meta?['total'] as int? ?? 0,
+      lastPage: meta?['last_page'] as int? ?? 1,
     );
   }
 

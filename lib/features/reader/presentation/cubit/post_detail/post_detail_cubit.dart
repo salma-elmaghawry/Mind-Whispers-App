@@ -3,6 +3,8 @@ import 'package:mind_whispers_app/core/bloc/base_bloc.dart';
 import 'package:mind_whispers_app/features/reader/presentation/cubit/post_detail/post_detail_state.dart';
 import 'package:mind_whispers_app/features/reader/repository/reader_repository.dart';
 
+const int _commentsPageSize = 10;
+
 class PostDetailCubit extends Cubit<PostDetailState> {
   final ReaderRepository _repository;
   final int postId;
@@ -35,44 +37,39 @@ class PostDetailCubit extends Cubit<PostDetailState> {
     await _loadComments(page: state.currentPage + 1, replace: false);
   }
 
+  Future<void> retryLoadComments() async {
+    await _loadComments(page: 1, replace: true);
+  }
+
   Future<void> _loadComments({required int page, required bool replace}) async {
-    if (!replace) emit(state.copyWith(isLoadingMoreComments: true));
+    emit(state.copyWith(isLoadingMoreComments: true));
     final result = await _repository.getComments(postId, page: page);
     result.fold(
       (failure) => emit(
         state.copyWith(
           isLoadingMoreComments: false,
+          commentsLoadFailed: true,
           message: failure.message,
           failure: failure,
           action: PostDetailAction.loadComments,
         ),
       ),
-      (paginated) => emit(
+      (comments) => emit(
         state.copyWith(
-          comments: replace ? paginated.items : [...state.comments, ...paginated.items],
-          currentPage: paginated.currentPage,
-          hasMoreComments: paginated.hasMore,
+          comments: replace ? comments : [...state.comments, ...comments],
+          currentPage: page,
+          hasMoreComments: comments.length >= _commentsPageSize,
           isLoadingMoreComments: false,
+          commentsLoadFailed: false,
           action: PostDetailAction.loadComments,
         ),
       ),
     );
   }
 
-  Future<void> addComment({
-    required String body,
-    required int authorId,
-    required String authorName,
-    String? authorAvatarUrl,
-  }) async {
+  Future<void> addComment({required String content, int? parentId}) async {
     emit(state.copyWith(isSubmittingComment: true, action: PostDetailAction.addComment));
-    final result = await _repository.addComment(
-      postId: postId,
-      body: body,
-      authorId: authorId,
-      authorName: authorName,
-      authorAvatarUrl: authorAvatarUrl,
-    );
+    final result = await _repository.addComment(postId: postId, content: content, parentId: parentId);
     result.fold(
       (failure) => emit(
         state.copyWith(
@@ -88,29 +85,6 @@ class PostDetailCubit extends Cubit<PostDetailState> {
           comments: [...state.comments, comment],
           post: state.post?.copyWith(commentsCount: state.post!.commentsCount + 1),
           action: PostDetailAction.addComment,
-        ),
-      ),
-    );
-  }
-
-  Future<void> deleteComment(int commentId) async {
-    emit(state.copyWith(action: PostDetailAction.deleteComment));
-    final result = await _repository.deleteComment(commentId);
-    result.fold(
-      (failure) => emit(
-        state.copyWith(
-          message: failure.message,
-          failure: failure,
-          action: PostDetailAction.deleteComment,
-        ),
-      ),
-      (_) => emit(
-        state.copyWith(
-          comments: state.comments.where((c) => c.id != commentId).toList(),
-          post: state.post?.copyWith(
-            commentsCount: (state.post!.commentsCount - 1).clamp(0, 1 << 31),
-          ),
-          action: PostDetailAction.deleteComment,
         ),
       ),
     );

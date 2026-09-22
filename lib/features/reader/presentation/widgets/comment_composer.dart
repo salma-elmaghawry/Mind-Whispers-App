@@ -4,10 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
 import 'package:mind_whispers_app/core/widgets/app_text_field.dart';
 
-/// Bottom-docked "add a comment" bar on [PostDetailScreen]. Note: submits
-/// only via the send button — [AppTextField] doesn't expose a
-/// field-submitted callback, so the keyboard's own action key is left at
-/// its default rather than showing a "send" icon that would do nothing.
 class CommentComposer extends StatefulWidget {
   final bool isSubmitting;
   final ValueChanged<String> onSubmit;

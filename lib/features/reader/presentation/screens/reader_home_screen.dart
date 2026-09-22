@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mind_whispers_app/core/const/app_assets.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
 import 'package:mind_whispers_app/core/injection/injection_container.dart';
 import 'package:mind_whispers_app/core/widgets/adaptive_scaffold.dart';
@@ -12,11 +13,8 @@ import 'package:mind_whispers_app/features/reader/presentation/screens/feed_scre
 import 'package:mind_whispers_app/features/reader/presentation/screens/notifications_screen.dart';
 import 'package:mind_whispers_app/features/reader/presentation/screens/profile_screen.dart';
 import 'package:mind_whispers_app/features/reader/presentation/screens/write_screen.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// The reader experience: Home (feed, search, category filters), Explore,
-/// Write (drafts/published), Notifications, and Profile. Post detail and
-/// its comment thread are a separate pushed route (see [PostDetailScreen]
-/// / `Routes.postDetail`), not a tab.
 class ReaderHomeScreen extends StatelessWidget {
   const ReaderHomeScreen({super.key});
 
@@ -42,7 +40,6 @@ class _ReaderHomeViewState extends State<_ReaderHomeView> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return AdaptiveScaffold(
       appBar: AppBar(
@@ -50,9 +47,9 @@ class _ReaderHomeViewState extends State<_ReaderHomeView> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SvgPicture.asset('assets/images/logo.svg', height: 30.h, excludeFromSemantics: true),
+            SvgPicture.asset(AppAssets.logoSvg, height: 30.h, excludeFromSemantics: true),
             horizontalSpace(8),
-            Text('app_name'.tr(), style: textTheme.displaySmall),
+            Text('app_name'.tr(), style: AppTextStyles.font20Bold),
           ],
         ),
       ),
@@ -97,8 +94,6 @@ class _ReaderHomeViewState extends State<_ReaderHomeView> {
   }
 }
 
-/// The raised purple "+" badge for the Write tab — the one destination in
-/// the bar meant to read as an action ("compose") rather than a place.
 class _ComposeBadge extends StatelessWidget {
   final Color color;
 

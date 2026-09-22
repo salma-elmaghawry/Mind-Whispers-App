@@ -7,11 +7,13 @@ import 'package:mind_whispers_app/core/animations/animations.dart';
 import 'package:mind_whispers_app/core/helpers/app_validators.dart';
 import 'package:mind_whispers_app/core/helpers/extensions.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
+import 'package:mind_whispers_app/core/helpers/ui_helpers.dart';
 import 'package:mind_whispers_app/core/routes/routes.dart';
 import 'package:mind_whispers_app/core/widgets/app_button.dart';
 import 'package:mind_whispers_app/core/widgets/app_text_field.dart';
 import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_state.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -55,7 +57,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       body: SafeArea(
         child: BlocListener<AuthCubit, AuthState>(
-          listenWhen: (previous, current) => current.action == AuthAction.register,
+          listenWhen: (previous, current) =>
+              current.action == AuthAction.register,
           listener: (context, state) {
             if (state.isSuccess && state.user != null) {
               final role = state.user!.primaryRole;
@@ -66,27 +69,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
             } else if (state.isFailure) {
               setState(() => _shakeCount++);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message ?? 'errors.unexpected_error'.tr())),
+                SnackBar(
+                  content: Text(
+                    state.message ?? 'errors.unexpected_error'.tr(),
+                  ),
+                ),
               );
             }
           },
           child: SingleChildScrollView(
-            padding: EdgeInsetsDirectional.symmetric(horizontal: 24.w, vertical: 24.h),
+            padding: EdgeInsetsDirectional.symmetric(
+              horizontal: 24.w,
+              vertical: 24.h,
+            ),
             child: KeyedSubtree(
               key: ValueKey(_shakeCount),
               child: Form(
                 key: _formKey,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    AddlogoPng(),
+                    verticalSpace(16),
                     Text(
                       'auth.signup.title'.tr(),
-                      style: Theme.of(context).textTheme.displayMedium,
+                      style: AppTextStyles.font24Bold,
                     ).fadeInSlideUp(),
                     verticalSpace(8),
                     Text(
                       'auth.signup.subtitle'.tr(),
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: AppTextStyles.font16Normal,
                     ).fadeInSlideUp(delay: 60.ms),
                     verticalSpace(32),
                     ...AnimationBuilder.staggerColumn(
@@ -125,20 +137,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           obscureText: true,
                           textInputAction: TextInputAction.done,
                           prefixIcon: const Icon(Icons.lock_outline_rounded),
-                          validator: (value) => AppValidators.validateConfirmPassword(
-                            value,
-                            _passwordController.text,
-                          ),
+                          validator: (value) =>
+                              AppValidators.validateConfirmPassword(
+                                value,
+                                _passwordController.text,
+                              ),
                         ),
                         verticalSpace(24),
                         BlocBuilder<AuthCubit, AuthState>(
                           builder: (context, state) {
                             final isLoading =
-                                state.isLoading && state.action == AuthAction.register;
+                                state.isLoading &&
+                                state.action == AuthAction.register;
                             return AppButton(
                               label: 'auth.signup.submit'.tr(),
                               isLoading: isLoading,
-                              onPressed: isLoading ? null : () => _submit(context),
+                              onPressed: isLoading
+                                  ? null
+                                  : () => _submit(context),
                             );
                           },
                         ),
@@ -148,10 +164,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           children: [
                             Text(
                               'auth.signup.have_account'.tr(),
-                              style: Theme.of(context).textTheme.bodyMedium,
+                              style: AppTextStyles.font16Normal,
                             ),
                             TextButton(
-                              onPressed: () => context.pushReplacementNamed(Routes.login),
+                              onPressed: () =>
+                                  context.pushReplacementNamed(Routes.login),
                               child: Text('auth.signup.sign_in_link'.tr()),
                             ),
                           ],
@@ -160,7 +177,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ],
                 ),
-              ).shake(),
+              ).fadeInSlideUp(),
             ),
           ),
         ),

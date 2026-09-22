@@ -48,7 +48,7 @@ dependencies:
   dio: ^5.11.1
   flutter_dotenv: ^6.0.1
   pretty_dio_logger: ^1.4.0
-
+  html: ^0.15.7
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -90,6 +90,7 @@ flutter:
     - assets/translations/
     - assets/images/
     - assets/icon/
+    - assets/logo/
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

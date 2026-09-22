@@ -9,8 +9,6 @@ abstract class Failure extends Equatable {
   List<Object> get props => [message];
 }
 
-// Auth failures
-
 class InvalidCredentialsFailure extends Failure {
   const InvalidCredentialsFailure({required super.message});
 }
@@ -18,8 +16,6 @@ class InvalidCredentialsFailure extends Failure {
 class EmailAlreadyInUseFailure extends Failure {
   const EmailAlreadyInUseFailure({required super.message});
 }
-
-// API response failures (mapped from HTTP status codes, see ErrorMapper)
 
 class UnauthorizedFailure extends Failure {
   const UnauthorizedFailure({required super.message});
@@ -42,19 +38,13 @@ class ValidationFailure extends Failure {
   List<Object> get props => [message, errors];
 }
 
-// Network failures
-
 class NetworkFailure extends Failure {
   const NetworkFailure({required super.message});
 }
 
-// Server failures
-
 class ServerFailure extends Failure {
   const ServerFailure({required super.message});
 }
-
-// Unexpected failures
 
 class UnexpectedFailure extends Failure {
   const UnexpectedFailure({required super.message});

@@ -1,22 +1,23 @@
 import 'package:equatable/equatable.dart';
 import 'package:mind_whispers_app/features/reader/domain/entities/author_ref.dart';
 
-/// Matches the `Comment` resource in API_CONTRACT.md.
 class Comment extends Equatable {
   final int id;
-  final String body;
+  final int? parentId;
+  final String content;
   final AuthorRef author;
-  final int postId;
+  final List<Comment> replies;
   final DateTime createdAt;
 
   const Comment({
     required this.id,
-    required this.body,
+    this.parentId,
+    required this.content,
     required this.author,
-    required this.postId,
+    this.replies = const [],
     required this.createdAt,
   });
 
   @override
-  List<Object?> get props => [id, body, author, postId, createdAt];
+  List<Object?> get props => [id, parentId, content, author, replies, createdAt];
 }

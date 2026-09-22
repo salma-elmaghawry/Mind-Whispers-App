@@ -49,7 +49,8 @@
             "remember_me": "Keep me signed in",
             "submit": "Sign in",
             "no_account": "Don't have an account?",
-            "sign_up_link": "Sign up"
+            "sign_up_link": "Sign up",
+            "forgot_password": "Forgot password?"
         },
         "signup": {
             "title": "Create your account",
@@ -63,6 +64,28 @@
             "submit": "Create account",
             "have_account": "Already have an account?",
             "sign_in_link": "Sign in"
+        },
+        "forgot": {
+            "title": "Forgot your password?",
+            "subtitle": "Enter your email and we'll send you a 6-digit code to reset it.",
+            "submit": "Send code",
+            "back_to_login": "Back to sign in",
+            "code_sent": "We sent a 6-digit code to your email."
+        },
+        "reset": {
+            "title": "Reset password",
+            "subtitle": "Enter the 6-digit code we sent to {} and choose a new password.",
+            "otp_label": "Verification code",
+            "otp_hint": "6-digit code",
+            "otp_required": "Verification code is required",
+            "otp_invalid": "Enter the 6-digit code",
+            "new_password_label": "New password",
+            "new_password_hint": "Enter a new password",
+            "submit": "Reset password",
+            "resend_prompt": "Didn't get the code?",
+            "resend": "Resend",
+            "code_resent": "A new code was sent to your email.",
+            "success": "Password updated. Sign in with your new password."
         }
     },
     "roles": {
@@ -118,9 +141,14 @@
         "tab_label": "Profile",
         "email_unverified": "Email not verified"
     },
+    "post": {
+        "premium_locked_title": "Premium content",
+        "premium_locked_message": "This post is available to Premium subscribers only."
+    },
     "comments": {
         "title": "Comments ({})",
         "empty_title": "No comments yet",
+        "load_error_title": "Couldn't load comments",
         "composer_label": "Comment",
         "composer_hint": "Write a comment...",
         "delete_title": "Delete comment?",

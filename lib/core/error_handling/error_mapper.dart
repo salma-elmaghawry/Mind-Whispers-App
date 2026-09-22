@@ -3,18 +3,12 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 
 import 'failures.dart';
 
-/// Maps raw exceptions from any layer into typed, localized [Failure]s.
-/// Every message goes through `.tr()` so the user always sees a localized error.
-///
-/// The Dio branch parses the Laravel API's error envelope
-/// (`{ "message": ..., "errors": {...} }`, see API_CONTRACT.md) so a 422
-/// carries its field-level errors and every other status carries the
-/// server's own message when one is present.
 class ErrorMapper {
-  static Failure map(dynamic error) {
+  static Failure map(dynamic error, [StackTrace? stackTrace]) {
     if (error is DioException) {
       return _mapDioException(error);
     }
@@ -25,6 +19,11 @@ class ErrorMapper {
 
     if (error is HttpException || error is FormatException) {
       return ServerFailure(message: 'errors.server_error'.tr());
+    }
+
+    if (kDebugMode) {
+      debugPrint('ErrorMapper: unmapped ${error.runtimeType}: $error');
+      if (stackTrace != null) debugPrint(stackTrace.toString());
     }
 
     return UnexpectedFailure(message: 'errors.unexpected_error'.tr());

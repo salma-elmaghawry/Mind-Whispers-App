@@ -4,10 +4,6 @@ import 'package:mind_whispers_app/core/helpers/spacing.dart';
 
 enum AppButtonVariant { filled, outlined, text }
 
-/// The one button every screen reaches for instead of styling
-/// Elevated/Outlined/TextButton one-off. `isLoading` swaps the label for a
-/// spinner and disables the tap — screens don't need their own
-/// loading-vs-label branching.
 class AppButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;

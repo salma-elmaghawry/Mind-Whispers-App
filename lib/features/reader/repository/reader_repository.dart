@@ -6,25 +6,21 @@ import 'package:mind_whispers_app/features/reader/domain/entities/paginated.dart
 import 'package:mind_whispers_app/features/reader/domain/entities/post.dart';
 
 abstract class ReaderRepository {
-  Future<Either<Failure, List<Category>>> getCategories();
+  Future<Either<Failure, List<Category>>> getCategories({String? search});
 
   Future<Either<Failure, Paginated<Post>>> getPosts({
-    int? categoryId,
     String? search,
+    String? categorySlug,
     int page = 1,
   });
 
   Future<Either<Failure, Post>> getPost(int id);
 
-  Future<Either<Failure, Paginated<Comment>>> getComments(int postId, {int page = 1});
+  Future<Either<Failure, List<Comment>>> getComments(int postId, {int page = 1});
 
   Future<Either<Failure, Comment>> addComment({
     required int postId,
-    required String body,
-    required int authorId,
-    required String authorName,
-    String? authorAvatarUrl,
+    required String content,
+    int? parentId,
   });
-
-  Future<Either<Failure, Unit>> deleteComment(int id);
 }

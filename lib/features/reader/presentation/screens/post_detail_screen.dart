@@ -3,14 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mind_whispers_app/core/animations/animations.dart';
-import 'package:mind_whispers_app/core/auth/app_role.dart';
 import 'package:mind_whispers_app/core/bloc/base_bloc.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
 import 'package:mind_whispers_app/core/widgets/empty_state_view.dart';
 import 'package:mind_whispers_app/core/widgets/error_state_view.dart';
-import 'package:mind_whispers_app/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:mind_whispers_app/features/reader/domain/entities/comment.dart';
-import 'package:mind_whispers_app/features/reader/domain/entities/post.dart';
 import 'package:mind_whispers_app/features/reader/presentation/cubit/post_detail/post_detail_cubit.dart';
 import 'package:mind_whispers_app/features/reader/presentation/cubit/post_detail/post_detail_state.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/author_avatar.dart';
@@ -18,11 +14,9 @@ import 'package:mind_whispers_app/features/reader/presentation/widgets/comment_c
 import 'package:mind_whispers_app/features/reader/presentation/widgets/comment_tile.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/post_cover_image.dart';
 import 'package:mind_whispers_app/features/reader/presentation/widgets/relative_date.dart';
+import 'package:mind_whispers_app/features/reader/presentation/widgets/rich_html_text.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// A single post: cover, body, and its comment thread. `postId` comes from
-/// the route arguments (see AppRouter) — [PostDetailCubit] fetches the post
-/// and its comments fresh rather than reusing the feed's summary, matching
-/// how `GET /posts/{id}` would be used against a real backend.
 class PostDetailScreen extends StatefulWidget {
   final int postId;
 
@@ -56,52 +50,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     super.dispose();
   }
 
-  void _handleAddComment(String body) {
-    final user = context.read<AuthCubit>().state.user;
-    if (user == null) return;
-    context.read<PostDetailCubit>().addComment(
-      body: body,
-      authorId: user.id,
-      authorName: user.name,
-    );
-  }
-
-  /// Mirrors API_CONTRACT.md's delete rule (owner, post author, or admin).
-  /// Note: the fake dataset's seeded posts/comments use their own id space,
-  /// unrelated to the real signed-in user's id — so this only reliably
-  /// recognizes comments the current session itself just added, plus admin
-  /// accounts (which always pass). That's expected until a real backend
-  /// enforces this server-side against real authorship.
-  bool _canDelete(Comment comment, Post post) {
-    final user = context.read<AuthCubit>().state.user;
-    if (user == null) return false;
-    if (user.primaryRole == AppRole.admin) return true;
-    if (comment.author.id == user.id) return true;
-    if (post.author.id == user.id) return true;
-    return false;
-  }
-
-  Future<void> _confirmDelete(int commentId) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text('comments.delete_title'.tr()),
-        content: Text('comments.delete_message'.tr()),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text('common.cancel'.tr()),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: Text('common.delete'.tr()),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true && mounted) {
-      context.read<PostDetailCubit>().deleteComment(commentId);
-    }
+  void _handleAddComment(String content) {
+    context.read<PostDetailCubit>().addComment(content: content);
   }
 
   @override
@@ -119,9 +69,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       ),
       body: BlocConsumer<PostDetailCubit, PostDetailState>(
         listenWhen: (previous, current) =>
-            current.isFailure &&
-            (current.action == PostDetailAction.addComment ||
-                current.action == PostDetailAction.deleteComment),
+            current.isFailure && current.action == PostDetailAction.addComment,
         listener: (context, state) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message ?? 'errors.unexpected_error'.tr())),
@@ -157,9 +105,10 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _CategoryChip(name: post.category.name),
+                          if (post.primaryCategory != null)
+                            _CategoryChip(name: post.primaryCategory!.name),
                           verticalSpace(12),
-                          Text(post.title, style: Theme.of(context).textTheme.displayMedium),
+                          Text(post.title, style: AppTextStyles.font24Bold),
                           verticalSpace(14),
                           Row(
                             children: [
@@ -172,36 +121,42 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                               Expanded(
                                 child: Text(
                                   '${post.author.name} · ${formatRelativeDate(post.publishedAt ?? post.createdAt)}',
-                                  style: Theme.of(context).textTheme.labelMedium,
+                                  style: AppTextStyles.font12Medium.secondary(context),
                                 ),
                               ),
                             ],
                           ),
                           verticalSpace(22),
-                          Text(post.body, style: Theme.of(context).textTheme.bodyLarge),
+                          if (post.isLocked)
+                            const _PremiumLockedNotice()
+                          else
+                            RichHtmlText(html: post.content ?? ''),
                           verticalSpace(28),
                           const Divider(),
                           verticalSpace(14),
                           Text(
                             'comments.title'.tr(args: ['${post.commentsCount}']),
-                            style: Theme.of(context).textTheme.displaySmall,
+                            style: AppTextStyles.font20Bold,
                           ),
                           verticalSpace(8),
                           if (state.comments.isEmpty && !state.isLoadingMoreComments)
                             Padding(
                               padding: EdgeInsets.symmetric(vertical: 16.h),
-                              child: EmptyStateView(
-                                icon: Icons.mode_comment_outlined,
-                                title: 'comments.empty_title'.tr(),
-                              ),
+                              child: state.commentsLoadFailed
+                                  ? EmptyStateView(
+                                      icon: Icons.error_outline_rounded,
+                                      title: 'comments.load_error_title'.tr(),
+                                      actionLabel: 'common.retry'.tr(),
+                                      onAction: () =>
+                                          context.read<PostDetailCubit>().retryLoadComments(),
+                                    )
+                                  : EmptyStateView(
+                                      icon: Icons.mode_comment_outlined,
+                                      title: 'comments.empty_title'.tr(),
+                                    ),
                             )
                           else
-                            for (final comment in state.comments)
-                              CommentTile(
-                                comment: comment,
-                                canDelete: _canDelete(comment, post),
-                                onDelete: () => _confirmDelete(comment.id),
-                              ),
+                            for (final comment in state.comments) CommentTile(comment: comment),
                           if (state.isLoadingMoreComments)
                             Padding(
                               padding: EdgeInsets.symmetric(vertical: 12.h),
@@ -263,7 +218,36 @@ class _CategoryChip extends StatelessWidget {
       ),
       child: Text(
         name,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colorScheme.primary),
+        style: AppTextStyles.font12Medium.copyWith(color: colorScheme.primary),
+      ),
+    );
+  }
+}
+
+class _PremiumLockedNotice extends StatelessWidget {
+  const _PremiumLockedNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(18.w),
+      decoration: BoxDecoration(
+        color: colorScheme.secondary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: colorScheme.secondary.withValues(alpha: 0.25)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.lock_outline_rounded, color: colorScheme.secondary),
+          verticalSpace(10),
+          Text('post.premium_locked_title'.tr(), style: AppTextStyles.font20Bold),
+          verticalSpace(6),
+          Text('post.premium_locked_message'.tr(), style: AppTextStyles.font16Normal),
+        ],
       ),
     );
   }

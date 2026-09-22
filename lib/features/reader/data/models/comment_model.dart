@@ -3,35 +3,43 @@ import 'package:mind_whispers_app/features/reader/domain/entities/comment.dart';
 
 class CommentModel {
   final int id;
-  final String body;
+  final int? parentId;
+  final String content;
   final AuthorRefModel author;
-  final int postId;
+  final List<CommentModel> replies;
   final DateTime createdAt;
 
   const CommentModel({
     required this.id,
-    required this.body,
+    this.parentId,
+    required this.content,
     required this.author,
-    required this.postId,
+    this.replies = const [],
     required this.createdAt,
   });
 
   factory CommentModel.fromJson(Map<String, dynamic> json) {
     return CommentModel(
       id: json['id'] as int,
-      body: json['body'] as String,
-      author: AuthorRefModel.fromJson(json['author'] as Map<String, dynamic>),
-      postId: json['post_id'] as int,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      parentId: json['parent_id'] as int?,
+      content: json['content'] as String,
+      author: json['author'] != null
+          ? AuthorRefModel.fromJson(json['author'] as Map<String, dynamic>)
+          : const AuthorRefModel(id: 0, name: ''),
+      replies: (json['replies'] as List<dynamic>? ?? const [])
+          .map((r) => CommentModel.fromJson(r as Map<String, dynamic>))
+          .toList(),
+      createdAt: DateTime.tryParse(json['created_at'] as String? ?? '') ?? DateTime.now(),
     );
   }
 
   Comment toEntity() {
     return Comment(
       id: id,
-      body: body,
+      parentId: parentId,
+      content: content,
       author: author.toEntity(),
-      postId: postId,
+      replies: replies.map((r) => r.toEntity()).toList(),
       createdAt: createdAt,
     );
   }

@@ -5,9 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mind_whispers_app/core/animations/animations.dart';
 import 'package:mind_whispers_app/core/helpers/spacing.dart';
 import 'package:mind_whispers_app/core/widgets/app_button.dart';
+import 'package:mind_whispers_app/core/utils/app_text_styles.dart';
 
-/// Shown when a Cubit's `state.isFailure`. Pass `state.message` — already
-/// localized by [ErrorMapper] — never a raw exception string.
 class ErrorStateView extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
@@ -31,7 +30,7 @@ class ErrorStateView extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: AppTextStyles.font18Normal,
             ).fadeInSlideUp(delay: 80.ms),
             if (onRetry != null) ...[
               verticalSpace(20),
